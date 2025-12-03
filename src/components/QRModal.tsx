@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import { toast } from 'sonner';
 import { useState } from 'react';
+import { QRCodeSVG } from 'qrcode.react';
 
 interface Crypto {
   name: string;
@@ -46,12 +47,12 @@ const QRModal = ({ open, onClose, crypto }: QRModalProps) => {
 
         <div className="space-y-4 py-4">
           <div className="flex items-center justify-center p-6 rounded-lg bg-white">
-            <div className="w-48 h-48 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-lg flex items-center justify-center">
-              <div className="text-center space-y-2">
-                <Icon name="QrCode" size={80} className="text-primary mx-auto" />
-                <p className="text-xs text-muted-foreground">QR-код адреса</p>
-              </div>
-            </div>
+            <QRCodeSVG
+              value={crypto.address}
+              size={200}
+              level="H"
+              includeMargin={true}
+            />
           </div>
 
           <div className="space-y-2">

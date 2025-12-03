@@ -6,9 +6,10 @@ import Icon from '@/components/ui/icon';
 interface ConfirmSeedProps {
   seedPhrase: string[];
   onNext: () => void;
+  onBack: () => void;
 }
 
-const ConfirmSeed = ({ seedPhrase, onNext }: ConfirmSeedProps) => {
+const ConfirmSeed = ({ seedPhrase, onNext, onBack }: ConfirmSeedProps) => {
   const [selectedWords, setSelectedWords] = useState<string[]>([]);
   const [shuffledWords, setShuffledWords] = useState<string[]>([]);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
@@ -46,16 +47,27 @@ const ConfirmSeed = ({ seedPhrase, onNext }: ConfirmSeedProps) => {
     <div className="min-h-screen flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl p-8 bg-card border-border animate-fade-in">
         <div className="flex flex-col space-y-6">
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <Icon name="CheckCircle" size={24} className="text-primary" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onBack}
+                className="hover:bg-muted"
+              >
+                <Icon name="ArrowLeft" size={20} />
+              </Button>
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <Icon name="CheckCircle" size={24} className="text-primary" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-foreground">Подтвердите фразу</h1>
+                <p className="text-sm text-muted-foreground">
+                  Выберите слова в правильном порядке
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Подтвердите фразу</h1>
-              <p className="text-sm text-muted-foreground">
-                Выберите слова в правильном порядке
-              </p>
-            </div>
+            <div className="w-10" />
           </div>
 
           <div className="space-y-3">

@@ -6,9 +6,10 @@ import Icon from '@/components/ui/icon';
 
 interface CreateUsernameProps {
   onNext: (username: string) => void;
+  onBack: () => void;
 }
 
-const CreateUsername = ({ onNext }: CreateUsernameProps) => {
+const CreateUsername = ({ onNext, onBack }: CreateUsernameProps) => {
   const [username, setUsername] = useState('');
   const [error, setError] = useState('');
 
@@ -37,16 +38,27 @@ const CreateUsername = ({ onNext }: CreateUsernameProps) => {
     <div className="min-h-screen flex items-center justify-center p-4">
       <Card className="w-full max-w-md p-8 bg-card border-border animate-fade-in">
         <div className="flex flex-col space-y-6">
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center">
-              <Icon name="User" size={24} className="text-secondary" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onBack}
+                className="hover:bg-muted"
+              >
+                <Icon name="ArrowLeft" size={20} />
+              </Button>
+              <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center">
+                <Icon name="User" size={24} className="text-secondary" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-foreground">Создайте имя</h1>
+                <p className="text-sm text-muted-foreground">
+                  Придумайте уникальное имя пользователя
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Создайте имя</h1>
-              <p className="text-sm text-muted-foreground">
-                Придумайте уникальное имя пользователя
-              </p>
-            </div>
+            <div className="w-10" />
           </div>
 
           <div className="space-y-4 pt-2">
