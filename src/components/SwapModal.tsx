@@ -259,11 +259,18 @@ const SwapModal = ({ open, onClose, allCryptos, onTransactionComplete }: SwapMod
                 >
                   {fromCrypto ? (
                     <>
-                      <div className="w-7 h-7 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
-                        {fromCrypto.iconUrl ? (
-                          <img src={fromCrypto.iconUrl} alt={fromCrypto.symbol} className="w-full h-full object-cover" />
-                        ) : (
-                          <span className={`text-lg font-bold ${fromCrypto.color}`}>{fromCrypto.icon}</span>
+                      <div className="relative w-7 h-7 rounded-full bg-secondary flex items-center justify-center overflow-visible">
+                        <div className="w-full h-full rounded-full overflow-hidden">
+                          {fromCrypto.iconUrl ? (
+                            <img src={fromCrypto.iconUrl} alt={fromCrypto.symbol} className="w-full h-full object-cover" />
+                          ) : (
+                            <span className={`text-lg font-bold ${fromCrypto.color}`}>{fromCrypto.icon}</span>
+                          )}
+                        </div>
+                        {fromCrypto.networkIconUrl && (
+                          <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-white dark:bg-gray-900 border border-white dark:border-gray-900 overflow-hidden shadow-md">
+                            <img src={fromCrypto.networkIconUrl} alt={fromCrypto.network} className="w-full h-full object-cover" />
+                          </div>
                         )}
                       </div>
                       <span className="text-base font-bold text-foreground">{fromCrypto.symbol}</span>
@@ -315,11 +322,18 @@ const SwapModal = ({ open, onClose, allCryptos, onTransactionComplete }: SwapMod
                 >
                   {toCrypto ? (
                     <>
-                      <div className="w-7 h-7 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
-                        {toCrypto.iconUrl ? (
-                          <img src={toCrypto.iconUrl} alt={toCrypto.symbol} className="w-full h-full object-cover" />
-                        ) : (
-                          <span className={`text-lg font-bold ${toCrypto.color}`}>{toCrypto.icon}</span>
+                      <div className="relative w-7 h-7 rounded-full bg-secondary flex items-center justify-center overflow-visible">
+                        <div className="w-full h-full rounded-full overflow-hidden">
+                          {toCrypto.iconUrl ? (
+                            <img src={toCrypto.iconUrl} alt={toCrypto.symbol} className="w-full h-full object-cover" />
+                          ) : (
+                            <span className={`text-lg font-bold ${toCrypto.color}`}>{toCrypto.icon}</span>
+                          )}
+                        </div>
+                        {toCrypto.networkIconUrl && (
+                          <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-white dark:bg-gray-900 border border-white dark:border-gray-900 overflow-hidden shadow-md">
+                            <img src={toCrypto.networkIconUrl} alt={toCrypto.network} className="w-full h-full object-cover" />
+                          </div>
                         )}
                       </div>
                       <span className="text-base font-bold text-foreground">{toCrypto.symbol}</span>
