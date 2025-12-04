@@ -91,6 +91,28 @@ const Index = () => {
     setSeedPhrase(mnemonic);
     const addresses = generateWalletAddresses(mnemonic);
     setWalletAddresses(addresses);
+    
+    // Проверяем, есть ли уже сохранённый кошелёк с этой seed-фразой
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    if (savedData) {
+      try {
+        const data = JSON.parse(savedData);
+        const savedSeedPhrase = data.seedPhrase?.join(' ');
+        const currentSeedPhrase = mnemonic.join(' ');
+        
+        // Если seed-фразы совпадают, восстанавливаем весь аккаунт
+        if (savedSeedPhrase === currentSeedPhrase) {
+          setUsername(data.username || '');
+          saveWalletData(mnemonic, data.username || '', addresses);
+          setStep('main');
+          return;
+        }
+      } catch (error) {
+        console.error('Ошибка проверки существующего кошелька:', error);
+      }
+    }
+    
+    // Если кошелёк не найден, просим создать username
     setStep('username');
   };
 

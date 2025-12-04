@@ -5,6 +5,7 @@ import Icon from '@/components/ui/icon';
 import QRModal from '@/components/QRModal';
 import SendModal from '@/components/SendModal';
 import AddCryptoModal from '@/components/AddCryptoModal';
+import PriceChart from '@/components/PriceChart';
 import { fetchCryptoPrices, calculateBalance } from '@/utils/cryptoPrices';
 import { getBalances } from '@/utils/balanceManager';
 import { toast } from 'sonner';
@@ -529,8 +530,11 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
 
       {selectedCrypto && !showQR && !showSend && !showAddModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 animate-fade-in" onClick={() => setSelectedCrypto(null)}>
-          <div className="absolute bottom-0 left-0 right-0 bg-card rounded-t-3xl p-6 pb-safe animate-slide-up" onClick={(e) => e.stopPropagation()}>
-            <div className="w-12 h-1 bg-border rounded-full mx-auto mb-6"></div>
+          <div className="absolute bottom-0 left-0 right-0 bg-card rounded-t-3xl pb-safe animate-slide-up max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="sticky top-0 bg-card z-10 pt-3 pb-4 px-6">
+              <div className="w-12 h-1 bg-border rounded-full mx-auto"></div>
+            </div>
+            <div className="px-6">
             
             <div className="flex items-center space-x-4 mb-6">
               <div className="relative w-16 h-16 rounded-full bg-secondary flex items-center justify-center overflow-visible">
@@ -557,6 +561,13 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
               <p className="text-sm text-muted-foreground mb-1">Баланс</p>
               <p className="text-3xl font-bold text-foreground mb-2">${selectedCrypto.usdValue}</p>
               <p className="text-sm text-muted-foreground">{selectedCrypto.balance} {selectedCrypto.symbol}</p>
+            </div>
+
+            <div className="mb-6 p-4 bg-secondary/30 rounded-2xl">
+              <PriceChart 
+                symbol={selectedCrypto.symbol} 
+                currentPrice={cryptoPrices[selectedCrypto.symbol]}
+              />
             </div>
 
             <div className="mb-4">
@@ -601,6 +612,7 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
                 <Icon name="Download" size={20} className="mr-2" />
                 Получить
               </Button>
+            </div>
             </div>
           </div>
         </div>
