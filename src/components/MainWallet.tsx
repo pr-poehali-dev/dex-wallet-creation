@@ -5,6 +5,7 @@ import Icon from '@/components/ui/icon';
 import QRModal from '@/components/QRModal';
 import SendModal from '@/components/SendModal';
 import AddCryptoModal from '@/components/AddCryptoModal';
+import SwapModal from '@/components/SwapModal';
 import PriceChart from '@/components/PriceChart';
 import TransactionHistory from '@/components/TransactionHistory';
 import TransactionDetailModal from '@/components/TransactionDetailModal';
@@ -40,6 +41,7 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
   const [showQR, setShowQR] = useState(false);
   const [showSend, setShowSend] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showSwap, setShowSwap] = useState(false);
   const [selectedCryptoIds, setSelectedCryptoIds] = useState<string[]>(['1', '2', '3', '6', '4']); // USDT TRC20, BTC, ETH, SOL, BNB
   const [cryptoPrices, setCryptoPrices] = useState<{[key: string]: number}>({});
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
@@ -375,6 +377,7 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
           </Button>
 
           <Button
+            onClick={() => setShowSwap(true)}
             className="h-auto flex flex-col items-center justify-center space-y-2 py-4 bg-white/10 hover:bg-white/20 text-white rounded-2xl border-none backdrop-blur-sm active:scale-95 transition-all"
           >
             <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
@@ -626,6 +629,15 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
           selectedCryptos={selectedCryptoIds}
           onAdd={saveSelectedCryptos}
           onClose={() => setShowAddModal(false)}
+        />
+      )}
+
+      {showSwap && (
+        <SwapModal
+          open={showSwap}
+          allCryptos={allCryptoList}
+          onClose={() => setShowSwap(false)}
+          onTransactionComplete={handleTransactionComplete}
         />
       )}
 
