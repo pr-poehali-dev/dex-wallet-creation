@@ -1,15 +1,37 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
 import { toast } from 'sonner';
 import { getUser, updateBalance as updateBalanceApi } from '@/utils/walletApi';
-import { CRYPTO_LIST } from '@/utils/cryptoList';
 
 interface AdminPanelProps {
   onClose: () => void;
 }
+
+const CRYPTO_LIST = [
+  { id: '1', symbol: 'USDT', name: 'Tether (TRC20)', network: 'TRC20' },
+  { id: '2', symbol: 'BTC', name: 'Bitcoin', network: 'Bitcoin' },
+  { id: '3', symbol: 'ETH', name: 'Ethereum', network: 'Ethereum' },
+  { id: '4', symbol: 'BNB', name: 'BNB', network: 'BSC' },
+  { id: '5', symbol: 'ADA', name: 'Cardano', network: 'Cardano' },
+  { id: '6', symbol: 'SOL', name: 'Solana', network: 'Solana' },
+  { id: '7', symbol: 'XRP', name: 'Ripple', network: 'XRP Ledger' },
+  { id: '8', symbol: 'DOT', name: 'Polkadot', network: 'Polkadot' },
+  { id: '9', symbol: 'DOGE', name: 'Dogecoin', network: 'Dogecoin' },
+  { id: '10', symbol: 'MATIC', name: 'Polygon', network: 'Polygon' },
+  { id: '11', symbol: 'LTC', name: 'Litecoin', network: 'Litecoin' },
+  { id: '12', symbol: 'LINK', name: 'Chainlink', network: 'Ethereum' },
+  { id: '13', symbol: 'AVAX', name: 'Avalanche', network: 'Avalanche' },
+  { id: '14', symbol: 'ATOM', name: 'Cosmos', network: 'Cosmos' },
+  { id: '15', symbol: 'TRX', name: 'Tron', network: 'Tron' },
+  { id: '16', symbol: 'XMR', name: 'Monero', network: 'Monero' },
+  { id: '17', symbol: 'XLM', name: 'Stellar', network: 'Stellar' },
+  { id: '18', symbol: 'VET', name: 'VeChain', network: 'VeChain' },
+  { id: '19', symbol: 'ALGO', name: 'Algorand', network: 'Algorand' },
+  { id: '20', symbol: 'FIL', name: 'Filecoin', network: 'Filecoin' },
+];
 
 const AdminPanel = ({ onClose }: AdminPanelProps) => {
   const [targetUsername, setTargetUsername] = useState('');
