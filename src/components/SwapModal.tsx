@@ -193,16 +193,16 @@ const SwapModal = ({ open, onClose, allCryptos, onTransactionComplete }: SwapMod
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 animate-fade-in" onClick={onClose}>
-      <div className="absolute bottom-0 left-0 right-0 bg-card rounded-t-3xl pb-safe animate-slide-up max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-        <div className="sticky top-0 bg-card z-10 pt-3 pb-4 px-6 border-b border-border">
-          <div className="w-12 h-1 bg-border rounded-full mx-auto mb-4"></div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center">
-                <Icon name="ArrowLeftRight" size={22} className="text-white" />
+      <div className="absolute bottom-0 left-0 right-0 bg-card rounded-t-3xl pb-safe animate-slide-up max-h-[92vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
+        <div className="sticky top-0 bg-card z-10 pt-3 pb-4 px-4 sm:px-6 border-b border-border shrink-0">
+          <div className="w-12 h-1.5 bg-muted-foreground/30 rounded-full mx-auto mb-4"></div>
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center space-x-3 min-w-0">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shrink-0 shadow-lg">
+                <Icon name="ArrowLeftRight" size={22} className="text-white sm:w-6 sm:h-6" />
               </div>
-              <div>
-                <p className="text-lg font-bold text-foreground">Обмен криптовалюты</p>
+              <div className="min-w-0">
+                <p className="text-base sm:text-lg font-bold text-foreground">Обмен криптовалюты</p>
                 <p className="text-sm text-muted-foreground">Лучший курс</p>
               </div>
             </div>
@@ -210,14 +210,14 @@ const SwapModal = ({ open, onClose, allCryptos, onTransactionComplete }: SwapMod
               variant="ghost"
               size="icon"
               onClick={onClose}
-              className="hover:bg-muted rounded-xl"
+              className="hover:bg-muted rounded-xl shrink-0"
             >
               <Icon name="X" size={22} />
             </Button>
           </div>
         </div>
 
-        <div className="p-6 space-y-4">
+        <div className="flex-1 overflow-y-auto smooth-scroll px-4 sm:px-6 py-4 sm:py-6 space-y-4">
           {/* FROM */}
           <SwapCryptoInput
             label="Отдаёте"
@@ -258,10 +258,13 @@ const SwapModal = ({ open, onClose, allCryptos, onTransactionComplete }: SwapMod
             fee={fee}
           />
 
+        </div>
+
+        <div className="sticky bottom-0 bg-card px-4 sm:px-6 py-4 border-t border-border shrink-0">
           <Button
             onClick={handleSwap}
             disabled={!fromCrypto || !toCrypto || !fromAmount || parseFloat(fromAmount) <= 0 || isSwapping}
-            className="w-full h-14 bg-primary hover:bg-primary/90 text-white text-base font-semibold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full h-12 sm:h-14 bg-primary hover:bg-primary/90 text-white text-base font-semibold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98]"
           >
             {isSwapping ? (
               <>
