@@ -214,6 +214,25 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'body': json.dumps({'transactions': transactions}),
                     'isBase64Encoded': False
                 }
+            
+            elif action == 'get_balances':
+                user_id = body.get('user_id')
+                
+                cur.execute(
+                    "SELECT crypto_id, balance FROM crypto_balances WHERE user_id = %s",
+                    (user_id,)
+                )
+                balances = {row[0]: row[1] for row in cur.fetchall()}
+                
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'body': json.dumps({'balances': balances}),
+                    'isBase64Encoded': False
+                }
         
         return {
             'statusCode': 400,

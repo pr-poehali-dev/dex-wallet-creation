@@ -117,6 +117,26 @@ export async function getUserBySeedPhrase(seedPhrase: string[]): Promise<GetUser
   return data;
 }
 
+export async function getUserBalances(userId: number): Promise<Record<string, string>> {
+  const response = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      action: 'get_balances',
+      user_id: userId,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to get user balances');
+  }
+
+  const data = await response.json();
+  return data.balances;
+}
+
 export async function updateBalance(
   userId: number,
   cryptoId: string,

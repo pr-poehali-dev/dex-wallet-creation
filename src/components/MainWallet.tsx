@@ -13,7 +13,7 @@ import AdminPanel from '@/components/AdminPanel';
 import { fetchCryptoPrices, calculateBalance } from '@/utils/cryptoPrices';
 import { getBalances, updateBalance } from '@/utils/balanceManager';
 import { getTransactions, setTransactions, addTransaction, generateTransactionHash, generateTransactionId, simulateTransactionConfirmation, Transaction } from '@/utils/transactionManager';
-import { getTransactions as getTransactionsApi } from '@/utils/walletApi';
+import { getTransactions as getTransactionsApi, getUserBalances } from '@/utils/walletApi';
 import { toast } from 'sonner';
 
 const USER_ID_KEY = 'dex_wallet_user_id';
@@ -60,10 +60,24 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
   
   const isAdmin = username.toUpperCase() === 'CMD';
 
-  const loadBalances = () => {
-    const balances = getBalances();
-    console.log('loadBalances called, loaded:', balances);
-    setCryptoBalances(balances);
+  const loadBalances = async () => {
+    const userIdStr = localStorage.getItem(USER_ID_KEY);
+    
+    if (userIdStr) {
+      try {
+        const userId = parseInt(userIdStr);
+        const balancesFromDb = await getUserBalances(userId);
+        console.log('Балансы загружены из БД:', balancesFromDb);
+        setCryptoBalances(balancesFromDb);
+      } catch (error) {
+        console.error('Ошибка загрузки балансов из БД:', error);
+        const balances = getBalances();
+        setCryptoBalances(balances);
+      }
+    } else {
+      const balances = getBalances();
+      setCryptoBalances(balances);
+    }
   };
 
   const loadTransactions = async () => {
@@ -99,6 +113,10 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
     loadBalances();
     loadTransactions();
 
+    const balanceInterval = setInterval(() => {
+      loadBalances();
+    }, 5000);
+
     const handleBalanceUpdate = (event: any) => {
       const userIdStr = localStorage.getItem(USER_ID_KEY);
       if (userIdStr && parseInt(userIdStr) === event.detail.userId) {
@@ -115,7 +133,10 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
     };
 
     window.addEventListener('balanceUpdated', handleBalanceUpdate);
-    return () => window.removeEventListener('balanceUpdated', handleBalanceUpdate);
+    return () => {
+      window.removeEventListener('balanceUpdated', handleBalanceUpdate);
+      clearInterval(balanceInterval);
+    };
   }, []);
 
   useEffect(() => {
