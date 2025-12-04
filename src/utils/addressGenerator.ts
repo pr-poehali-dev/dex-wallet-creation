@@ -193,8 +193,15 @@ export const generateWalletAddresses = (seedPhrase: string[]): Map<string, strin
       hash = (hash * 9301 + 49297) % 233280;
       return hash / 233280;
     };
-    addressMap.set(network, generateAddress(network));
+    const generatedAddress = generateAddress(network);
     Math.random = originalRandom;
+    
+    // Debug для проверки
+    if (network === 'Tron' || network === 'TRC20' || network === 'Bitcoin') {
+      console.log(`Generated ${network}: ${generatedAddress} (length: ${generatedAddress.length})`);
+    }
+    
+    addressMap.set(network, generatedAddress);
   });
 
   return addressMap;
