@@ -10,9 +10,13 @@ import Welcome from '@/components/Welcome';
 import MainWallet from '@/components/MainWallet';
 import { generateWalletAddresses } from '@/utils/addressGenerator';
 import { initTestBalances } from '@/utils/testBalances';
-import { getBalances } from '@/utils/balanceManager';
+import { setBalances } from '@/utils/balanceManager';
+import { setTransactions } from '@/utils/transactionManager';
+import { createUser, getUser } from '@/utils/walletApi';
+import { toast } from 'sonner';
 
 const STORAGE_KEY = 'dex_wallet_data';
+const USER_ID_KEY = 'dex_wallet_user_id';
 
 const Index = () => {
   const [step, setStep] = useState<'choice' | 'create' | 'restore' | 'seed' | 'confirm' | 'username' | 'welcome' | 'main'>('choice');
@@ -21,38 +25,73 @@ const Index = () => {
   const [walletAddresses, setWalletAddresses] = useState<Map<string, string>>(new Map());
 
   useEffect(() => {
-    const savedData = localStorage.getItem(STORAGE_KEY);
-    if (savedData) {
-      try {
-        const data = JSON.parse(savedData);
-        setSeedPhrase(data.seedPhrase || []);
-        setUsername(data.username || '');
-        
-        let addressesMap = new Map(Object.entries(data.addresses || {}));
-        
-        if (data.seedPhrase && data.seedPhrase.length > 0) {
-          const newAddresses = generateWalletAddresses(data.seedPhrase);
-          addressesMap = newAddresses;
+    const loadWallet = async () => {
+      const savedData = localStorage.getItem(STORAGE_KEY);
+      if (savedData) {
+        try {
+          const data = JSON.parse(savedData);
+          const savedUsername = data.username || '';
           
-          const updatedData = {
-            ...data,
-            addresses: Object.fromEntries(newAddresses)
-          };
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData));
-        }
-        
-        setWalletAddresses(addressesMap);
-        
-        const balances = getBalances();
-        if (Object.keys(balances).length === 0) {
+          if (savedUsername) {
+            try {
+              const userData = await getUser(savedUsername);
+              
+              if (userData) {
+                const seedPhraseArray = userData.seed_phrase_encrypted.split(' ');
+                setSeedPhrase(seedPhraseArray);
+                setUsername(userData.username);
+                
+                const addressesMap = new Map(Object.entries(userData.addresses));
+                setWalletAddresses(addressesMap);
+                
+                setBalances(userData.balances);
+                
+                localStorage.setItem(USER_ID_KEY, userData.user_id.toString());
+                
+                const updatedData = {
+                  seedPhrase: seedPhraseArray,
+                  username: userData.username,
+                  addresses: userData.addresses
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData));
+                
+                setStep('main');
+                return;
+              }
+            } catch (error) {
+              console.error('Ошибка загрузки данных из БД:', error);
+              toast.error('Ошибка загрузки данных кошелька');
+            }
+          }
+          
+          setSeedPhrase(data.seedPhrase || []);
+          setUsername(savedUsername);
+          
+          let addressesMap = new Map(Object.entries(data.addresses || {}));
+          
+          if (data.seedPhrase && data.seedPhrase.length > 0) {
+            const newAddresses = generateWalletAddresses(data.seedPhrase);
+            addressesMap = newAddresses;
+            
+            const updatedData = {
+              ...data,
+              addresses: Object.fromEntries(newAddresses)
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData));
+          }
+          
+          setWalletAddresses(addressesMap);
+          
           initTestBalances();
+          
+          setStep('main');
+        } catch (error) {
+          console.error('Ошибка загрузки данных кошелька:', error);
         }
-        
-        setStep('main');
-      } catch (error) {
-        console.error('Ошибка загрузки данных кошелька:', error);
       }
-    }
+    };
+    
+    loadWallet();
   }, []);
 
   const saveWalletData = (seed: string[], name: string, addresses: Map<string, string>) => {
@@ -80,9 +119,21 @@ const Index = () => {
     setStep('username');
   };
 
-  const handleUsernameCreated = (name: string) => {
+  const handleUsernameCreated = async (name: string) => {
     setUsername(name);
     saveWalletData(seedPhrase, name, walletAddresses);
+    
+    try {
+      const addresses = Object.fromEntries(walletAddresses);
+      const userId = await createUser(name, seedPhrase, addresses);
+      localStorage.setItem(USER_ID_KEY, userId.toString());
+      initTestBalances();
+      toast.success('Кошелёк успешно создан и сохранён в базе данных');
+    } catch (error) {
+      console.error('Ошибка создания пользователя в БД:', error);
+      toast.error('Ошибка сохранения кошелька, но вы можете продолжить работу');
+    }
+    
     setStep('welcome');
   };
 
@@ -95,12 +146,11 @@ const Index = () => {
     return mnemonic.split(' ');
   };
 
-  const handleRestoreWallet = (mnemonic: string[]) => {
+  const handleRestoreWallet = async (mnemonic: string[]) => {
     setSeedPhrase(mnemonic);
     const addresses = generateWalletAddresses(mnemonic);
     setWalletAddresses(addresses);
     
-    // Проверяем, есть ли уже сохранённый кошелёк с этой seed-фразой
     const savedData = localStorage.getItem(STORAGE_KEY);
     if (savedData) {
       try {
@@ -108,10 +158,23 @@ const Index = () => {
         const savedSeedPhrase = data.seedPhrase?.join(' ');
         const currentSeedPhrase = mnemonic.join(' ');
         
-        // Если seed-фразы совпадают, восстанавливаем весь аккаунт
         if (savedSeedPhrase === currentSeedPhrase) {
-          setUsername(data.username || '');
-          saveWalletData(mnemonic, data.username || '', addresses);
+          const savedUsername = data.username || '';
+          setUsername(savedUsername);
+          saveWalletData(mnemonic, savedUsername, addresses);
+          
+          try {
+            const userData = await getUser(savedUsername);
+            if (userData) {
+              setBalances(userData.balances);
+              localStorage.setItem(USER_ID_KEY, userData.user_id.toString());
+              toast.success('Кошелёк успешно восстановлен из базы данных');
+            }
+          } catch (error) {
+            console.error('Ошибка загрузки данных из БД:', error);
+            initTestBalances();
+          }
+          
           setStep('main');
           return;
         }
@@ -120,7 +183,6 @@ const Index = () => {
       }
     }
     
-    // Если кошелёк не найден, просим создать username
     setStep('username');
   };
 

@@ -80,7 +80,7 @@ const SwapModal = ({ open, onClose, allCryptos, onTransactionComplete }: SwapMod
 
   if (!open) return null;
 
-  const handleSwap = () => {
+  const handleSwap = async () => {
     console.log('=== SWAP STARTED ===');
     console.log('From:', fromCrypto?.symbol, fromCrypto?.name, 'Balance:', fromCrypto?.balance);
     console.log('To:', toCrypto?.symbol, toCrypto?.name, 'Balance:', toCrypto?.balance);
@@ -111,7 +111,6 @@ const SwapModal = ({ open, onClose, allCryptos, onTransactionComplete }: SwapMod
     console.log('✅ Validation passed, starting swap...');
     setIsSwapping(true);
 
-    // Создаём транзакцию отправки
     const sendTxId = generateTransactionId();
     const sendTransaction = {
       id: sendTxId,
@@ -127,7 +126,6 @@ const SwapModal = ({ open, onClose, allCryptos, onTransactionComplete }: SwapMod
       network: fromCrypto.network
     };
 
-    // Создаём транзакцию получения
     const receiveTxId = generateTransactionId();
     const receiveAmount = parseFloat(toAmount);
     const receiveTransaction = {
@@ -144,27 +142,24 @@ const SwapModal = ({ open, onClose, allCryptos, onTransactionComplete }: SwapMod
       network: toCrypto.network
     };
 
-    addTransaction(sendTransaction);
-    addTransaction(receiveTransaction);
+    await addTransaction(sendTransaction);
+    await addTransaction(receiveTransaction);
 
-    // Обновляем балансы
     const newFromBalance = (currentBalance - swapAmount).toFixed(8).replace(/\.?0+$/, '');
     console.log(`Обмен: ${fromCrypto.symbol} баланс ${currentBalance} -> ${newFromBalance}`);
-    updateBalance(fromCrypto.id, newFromBalance);
+    await updateBalance(fromCrypto.id, newFromBalance);
 
     const currentToBalance = parseFloat(toCrypto.balance.replace(',', ''));
     const newToBalance = (currentToBalance + receiveAmount).toFixed(8).replace(/\.?0+$/, '');
     console.log(`Обмен: ${toCrypto.symbol} баланс ${currentToBalance} -> ${newToBalance}`);
-    updateBalance(toCrypto.id, newToBalance);
+    await updateBalance(toCrypto.id, newToBalance);
 
-    // Сразу вызываем обновление данных
     if (onTransactionComplete) {
       onTransactionComplete();
     }
 
     toast.success(`Обменяно ${swapAmount} ${fromCrypto.symbol} на ${receiveAmount.toFixed(6)} ${toCrypto.symbol}`);
 
-    // Подтверждаем транзакции
     simulateTransactionConfirmation(sendTxId, () => {
       if (onTransactionComplete) onTransactionComplete();
     });
@@ -175,7 +170,6 @@ const SwapModal = ({ open, onClose, allCryptos, onTransactionComplete }: SwapMod
 
     setIsSwapping(false);
     
-    // Закрываем модалку с небольшой задержкой, чтобы пользователь увидел результат
     setTimeout(() => {
       onClose();
       setFromAmount('');

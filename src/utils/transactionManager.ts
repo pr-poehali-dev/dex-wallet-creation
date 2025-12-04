@@ -1,3 +1,5 @@
+import { saveTransaction as saveTransactionApi } from './walletApi';
+
 export interface Transaction {
   id: string;
   type: 'send' | 'receive';
@@ -13,6 +15,7 @@ export interface Transaction {
 }
 
 const TRANSACTION_STORAGE_KEY = 'crypto_transactions';
+const USER_ID_KEY = 'dex_wallet_user_id';
 
 export const generateTransactionHash = (): string => {
   const chars = '0123456789abcdef';
@@ -38,18 +41,38 @@ export const getTransactions = (): Transaction[] => {
   }
 };
 
-export const addTransaction = (transaction: Transaction): void => {
+export const setTransactions = (transactions: Transaction[]): void => {
+  try {
+    localStorage.setItem(TRANSACTION_STORAGE_KEY, JSON.stringify(transactions));
+  } catch (error) {
+    console.error('Error setting transactions:', error);
+  }
+};
+
+export const addTransaction = async (transaction: Transaction): Promise<void> => {
   const transactions = getTransactions();
   transactions.unshift(transaction);
   localStorage.setItem(TRANSACTION_STORAGE_KEY, JSON.stringify(transactions));
+  
+  const userIdStr = localStorage.getItem(USER_ID_KEY);
+  if (userIdStr) {
+    const userId = parseInt(userIdStr);
+    await saveTransactionApi(userId, transaction);
+  }
 };
 
-export const updateTransactionStatus = (id: string, status: Transaction['status']): void => {
+export const updateTransactionStatus = async (id: string, status: Transaction['status']): Promise<void> => {
   const transactions = getTransactions();
   const index = transactions.findIndex(tx => tx.id === id);
   if (index !== -1) {
     transactions[index].status = status;
     localStorage.setItem(TRANSACTION_STORAGE_KEY, JSON.stringify(transactions));
+    
+    const userIdStr = localStorage.getItem(USER_ID_KEY);
+    if (userIdStr) {
+      const userId = parseInt(userIdStr);
+      await saveTransactionApi(userId, transactions[index]);
+    }
   }
 };
 

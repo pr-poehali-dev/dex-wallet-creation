@@ -11,8 +11,11 @@ import TransactionHistory from '@/components/TransactionHistory';
 import TransactionDetailModal from '@/components/TransactionDetailModal';
 import { fetchCryptoPrices, calculateBalance } from '@/utils/cryptoPrices';
 import { getBalances, updateBalance } from '@/utils/balanceManager';
-import { getTransactions, addTransaction, generateTransactionHash, generateTransactionId, simulateTransactionConfirmation, Transaction } from '@/utils/transactionManager';
+import { getTransactions, setTransactions, addTransaction, generateTransactionHash, generateTransactionId, simulateTransactionConfirmation, Transaction } from '@/utils/transactionManager';
+import { getTransactions as getTransactionsApi } from '@/utils/walletApi';
 import { toast } from 'sonner';
+
+const USER_ID_KEY = 'dex_wallet_user_id';
 
 interface MainWalletProps {
   username: string;
@@ -58,9 +61,24 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
     setCryptoBalances(balances);
   };
 
-  const loadTransactions = () => {
-    const txs = getTransactions();
-    setTransactions(txs);
+  const loadTransactions = async () => {
+    const userIdStr = localStorage.getItem(USER_ID_KEY);
+    
+    if (userIdStr) {
+      try {
+        const userId = parseInt(userIdStr);
+        const txsFromDb = await getTransactionsApi(userId);
+        setTransactions(txsFromDb);
+        console.log('Транзакции загружены из БД:', txsFromDb.length);
+      } catch (error) {
+        console.error('Ошибка загрузки транзакций из БД:', error);
+        const txs = getTransactions();
+        setTransactions(txs);
+      }
+    } else {
+      const txs = getTransactions();
+      setTransactions(txs);
+    }
   };
 
   useEffect(() => {

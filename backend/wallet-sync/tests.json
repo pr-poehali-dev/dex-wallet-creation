@@ -1,0 +1,30 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS request for CORS",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Create user with encrypted seed phrase",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "action": "create_user",
+        "username": "test_user",
+        "seed_phrase_encrypted": "encrypted_seed_phrase_here",
+        "addresses": {
+          "Bitcoin": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+          "Ethereum": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0"
+        }
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "user_id": "number",
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

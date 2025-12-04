@@ -33,7 +33,7 @@ const SendModal = ({ open, onClose, crypto, onTransactionComplete }: SendModalPr
 
   if (!open) return null;
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!address || !amount) {
       toast.error('Заполните все поля');
       return;
@@ -65,10 +65,10 @@ const SendModal = ({ open, onClose, crypto, onTransactionComplete }: SendModalPr
       network: crypto.network
     };
 
-    addTransaction(transaction);
+    await addTransaction(transaction);
 
     const newBalance = (currentBalance - sendAmount - fee).toFixed(8).replace(/\.?0+$/, '');
-    updateBalance(crypto.id, newBalance);
+    await updateBalance(crypto.id, newBalance);
 
     toast.success('Транзакция отправлена в сеть');
 
