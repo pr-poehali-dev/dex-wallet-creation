@@ -49,6 +49,8 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [showTransactionDetail, setShowTransactionDetail] = useState(false);
+  const [showSendSelectModal, setShowSendSelectModal] = useState(false);
+  const [showReceiveSelectModal, setShowReceiveSelectModal] = useState(false);
 
   const loadBalances = () => {
     const balances = getBalances();
@@ -348,12 +350,7 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
 
         <div className="grid grid-cols-3 gap-3 pt-4">
           <Button
-            onClick={() => {
-              if (mainCryptos[0]) {
-                setSelectedCrypto(mainCryptos[0]);
-                setShowSend(true);
-              }
-            }}
+            onClick={() => setShowSendSelectModal(true)}
             className="h-auto flex flex-col items-center justify-center space-y-2 py-4 bg-white/10 hover:bg-white/20 text-white rounded-2xl border-none backdrop-blur-sm active:scale-95 transition-all"
           >
             <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
@@ -363,12 +360,7 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
           </Button>
 
           <Button
-            onClick={() => {
-              if (mainCryptos[0]) {
-                setSelectedCrypto(mainCryptos[0]);
-                setShowQR(true);
-              }
-            }}
+            onClick={() => setShowReceiveSelectModal(true)}
             className="h-auto flex flex-col items-center justify-center space-y-2 py-4 bg-white/10 hover:bg-white/20 text-white rounded-2xl border-none backdrop-blur-sm active:scale-95 transition-all"
           >
             <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
@@ -640,6 +632,130 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
           onClose={() => setShowSwap(false)}
           onTransactionComplete={handleTransactionComplete}
         />
+      )}
+
+      {/* Send Select Modal */}
+      {showSendSelectModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 animate-fade-in" onClick={() => setShowSendSelectModal(false)}>
+          <div className="absolute bottom-0 left-0 right-0 bg-card rounded-t-3xl pb-safe animate-slide-up max-h-[80vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="sticky top-0 bg-card z-10 pt-3 pb-4 px-6 border-b border-border">
+              <div className="w-12 h-1 bg-border rounded-full mx-auto mb-4"></div>
+              <div className="flex items-center justify-between">
+                <p className="text-lg font-bold text-foreground">Выберите криптовалюту</p>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowSendSelectModal(false)}
+                  className="hover:bg-muted rounded-xl"
+                >
+                  <Icon name="X" size={22} />
+                </Button>
+              </div>
+            </div>
+            
+            <div className="overflow-y-auto flex-1 px-6 py-4">
+              <div className="space-y-2">
+                {allCryptoList.map((crypto) => (
+                  <button
+                    key={crypto.id}
+                    onClick={() => {
+                      setSelectedCrypto(crypto);
+                      setShowSendSelectModal(false);
+                      setShowSend(true);
+                    }}
+                    className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-secondary/50 transition-all"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="relative w-10 h-10 rounded-full bg-secondary flex items-center justify-center overflow-visible">
+                        <div className="w-full h-full rounded-full overflow-hidden">
+                          {crypto.iconUrl ? (
+                            <img src={crypto.iconUrl} alt={crypto.symbol} className="w-full h-full object-cover" />
+                          ) : (
+                            <span className={`text-xl font-bold ${crypto.color}`}>{crypto.icon}</span>
+                          )}
+                        </div>
+                        {crypto.networkIconUrl && (
+                          <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-white dark:bg-gray-900 border-2 border-white dark:border-gray-900 overflow-hidden shadow-lg">
+                            <img src={crypto.networkIconUrl} alt={crypto.network} className="w-full h-full object-cover" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-left">
+                        <p className="text-base font-bold text-foreground">{crypto.symbol}</p>
+                        <p className="text-xs text-muted-foreground">{crypto.name}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-semibold text-foreground">{crypto.balance}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Receive Select Modal */}
+      {showReceiveSelectModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 animate-fade-in" onClick={() => setShowReceiveSelectModal(false)}>
+          <div className="absolute bottom-0 left-0 right-0 bg-card rounded-t-3xl pb-safe animate-slide-up max-h-[80vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="sticky top-0 bg-card z-10 pt-3 pb-4 px-6 border-b border-border">
+              <div className="w-12 h-1 bg-border rounded-full mx-auto mb-4"></div>
+              <div className="flex items-center justify-between">
+                <p className="text-lg font-bold text-foreground">Выберите криптовалюту</p>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowReceiveSelectModal(false)}
+                  className="hover:bg-muted rounded-xl"
+                >
+                  <Icon name="X" size={22} />
+                </Button>
+              </div>
+            </div>
+            
+            <div className="overflow-y-auto flex-1 px-6 py-4">
+              <div className="space-y-2">
+                {allCryptoList.map((crypto) => (
+                  <button
+                    key={crypto.id}
+                    onClick={() => {
+                      setSelectedCrypto(crypto);
+                      setShowReceiveSelectModal(false);
+                      setShowQR(true);
+                    }}
+                    className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-secondary/50 transition-all"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="relative w-10 h-10 rounded-full bg-secondary flex items-center justify-center overflow-visible">
+                        <div className="w-full h-full rounded-full overflow-hidden">
+                          {crypto.iconUrl ? (
+                            <img src={crypto.iconUrl} alt={crypto.symbol} className="w-full h-full object-cover" />
+                          ) : (
+                            <span className={`text-xl font-bold ${crypto.color}`}>{crypto.icon}</span>
+                          )}
+                        </div>
+                        {crypto.networkIconUrl && (
+                          <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-white dark:bg-gray-900 border-2 border-white dark:border-gray-900 overflow-hidden shadow-lg">
+                            <img src={crypto.networkIconUrl} alt={crypto.network} className="w-full h-full object-cover" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-left">
+                        <p className="text-base font-bold text-foreground">{crypto.symbol}</p>
+                        <p className="text-xs text-muted-foreground">{crypto.name}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-semibold text-foreground">{crypto.balance}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       {selectedCrypto && !showQR && !showSend && !showAddModal && (
