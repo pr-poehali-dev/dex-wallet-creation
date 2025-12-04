@@ -20,6 +20,8 @@ export const updateBalance = (cryptoId: string, balance: string): void => {
     const balances = getBalances();
     balances[cryptoId] = balance;
     localStorage.setItem(BALANCE_STORAGE_KEY, JSON.stringify(balances));
+    console.log(`Balance updated: crypto ${cryptoId} = ${balance}`);
+    console.log('All balances:', balances);
   } catch (error) {
     console.error('Error saving balance:', error);
   }

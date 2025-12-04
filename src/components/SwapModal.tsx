@@ -152,13 +152,20 @@ const SwapModal = ({ open, onClose, allCryptos, onTransactionComplete }: SwapMod
 
     // Обновляем балансы
     const newFromBalance = (currentBalance - swapAmount).toFixed(8).replace(/\.?0+$/, '');
+    console.log(`Обмен: ${fromCrypto.symbol} баланс ${currentBalance} -> ${newFromBalance}`);
     updateBalance(fromCrypto.id, newFromBalance);
 
     const currentToBalance = parseFloat(toCrypto.balance.replace(',', ''));
     const newToBalance = (currentToBalance + receiveAmount).toFixed(8).replace(/\.?0+$/, '');
+    console.log(`Обмен: ${toCrypto.symbol} баланс ${currentToBalance} -> ${newToBalance}`);
     updateBalance(toCrypto.id, newToBalance);
 
-    toast.success('Обмен выполнен успешно');
+    // Сразу вызываем обновление данных
+    if (onTransactionComplete) {
+      onTransactionComplete();
+    }
+
+    toast.success(`Обменяно ${swapAmount} ${fromCrypto.symbol} на ${receiveAmount.toFixed(6)} ${toCrypto.symbol}`);
 
     // Подтверждаем транзакции
     simulateTransactionConfirmation(sendTxId, () => {
@@ -170,9 +177,13 @@ const SwapModal = ({ open, onClose, allCryptos, onTransactionComplete }: SwapMod
     });
 
     setIsSwapping(false);
-    onClose();
-    setFromAmount('');
-    setToAmount('');
+    
+    // Закрываем модалку с небольшой задержкой, чтобы пользователь увидел результат
+    setTimeout(() => {
+      onClose();
+      setFromAmount('');
+      setToAmount('');
+    }, 500);
   };
 
   const handleSwitchCryptos = () => {
