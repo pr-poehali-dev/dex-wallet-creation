@@ -1,11 +1,13 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
 import { toast } from 'sonner';
 import { addTransaction, generateTransactionHash, generateTransactionId, simulateTransactionConfirmation } from '@/utils/transactionManager';
-import { updateBalance, getBalances } from '@/utils/balanceManager';
+import { updateBalance } from '@/utils/balanceManager';
 import { fetchCryptoPrices } from '@/utils/cryptoPrices';
+import SwapCryptoInput from '@/components/swap/SwapCryptoInput';
+import CryptoSelectModal from '@/components/swap/CryptoSelectModal';
+import SwapInfoSection from '@/components/swap/SwapInfoSection';
 
 interface Crypto {
   id: string;
@@ -15,6 +17,7 @@ interface Crypto {
   balance: string;
   icon: string;
   iconUrl?: string;
+  networkIconUrl?: string;
   color: string;
 }
 
@@ -34,8 +37,6 @@ const SwapModal = ({ open, onClose, allCryptos, onTransactionComplete }: SwapMod
   const [showToSelect, setShowToSelect] = useState(false);
   const [isSwapping, setIsSwapping] = useState(false);
   const [prices, setPrices] = useState<{[key: string]: number}>({});
-  const [searchFrom, setSearchFrom] = useState('');
-  const [searchTo, setSearchTo] = useState('');
 
   useEffect(() => {
     const loadPrices = async () => {
@@ -76,20 +77,6 @@ const SwapModal = ({ open, onClose, allCryptos, onTransactionComplete }: SwapMod
       setToAmount('');
     }
   }, [fromAmount, exchangeRate]);
-
-  const filteredFromCryptos = useMemo(() => {
-    return allCryptos.filter(c => 
-      c.symbol.toLowerCase().includes(searchFrom.toLowerCase()) ||
-      c.name.toLowerCase().includes(searchFrom.toLowerCase())
-    );
-  }, [allCryptos, searchFrom]);
-
-  const filteredToCryptos = useMemo(() => {
-    return allCryptos.filter(c => 
-      c.symbol.toLowerCase().includes(searchTo.toLowerCase()) ||
-      c.name.toLowerCase().includes(searchTo.toLowerCase())
-    );
-  }, [allCryptos, searchTo]);
 
   if (!open) return null;
 
@@ -238,65 +225,16 @@ const SwapModal = ({ open, onClose, allCryptos, onTransactionComplete }: SwapMod
 
         <div className="p-6 space-y-4">
           {/* FROM */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between px-1">
-              <label className="text-sm font-semibold text-muted-foreground">Отдаёте</label>
-              {fromCrypto && (
-                <button
-                  onClick={handleMaxAmount}
-                  className="text-sm text-primary hover:text-primary/80 font-semibold transition-colors"
-                >
-                  Макс: {fromCrypto.balance}
-                </button>
-              )}
-            </div>
-            
-            <div className="p-4 rounded-2xl bg-secondary/50 border-2 border-border hover:border-primary/50 transition-all">
-              <div className="flex items-center justify-between mb-3">
-                <button
-                  onClick={() => setShowFromSelect(true)}
-                  className="flex items-center space-x-2 px-3 py-2 rounded-xl bg-card hover:bg-secondary border border-border transition-all"
-                >
-                  {fromCrypto ? (
-                    <>
-                      <div className="relative w-7 h-7 rounded-full bg-secondary flex items-center justify-center overflow-visible">
-                        <div className="w-full h-full rounded-full overflow-hidden">
-                          {fromCrypto.iconUrl ? (
-                            <img src={fromCrypto.iconUrl} alt={fromCrypto.symbol} className="w-full h-full object-cover" />
-                          ) : (
-                            <span className={`text-lg font-bold ${fromCrypto.color}`}>{fromCrypto.icon}</span>
-                          )}
-                        </div>
-                        {fromCrypto.networkIconUrl && (
-                          <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-white dark:bg-gray-900 border border-white dark:border-gray-900 overflow-hidden shadow-md">
-                            <img src={fromCrypto.networkIconUrl} alt={fromCrypto.network} className="w-full h-full object-cover" />
-                          </div>
-                        )}
-                      </div>
-                      <span className="text-base font-bold text-foreground">{fromCrypto.symbol}</span>
-                      <Icon name="ChevronDown" size={18} className="text-muted-foreground" />
-                    </>
-                  ) : (
-                    <span className="text-sm text-muted-foreground">Выберите</span>
-                  )}
-                </button>
-              </div>
-              
-              <Input
-                type="number"
-                value={fromAmount}
-                onChange={(e) => setFromAmount(e.target.value)}
-                placeholder="0.00"
-                className="text-2xl font-bold h-auto p-0 border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
-              />
-              
-              {fromCrypto && prices[fromCrypto.symbol] && fromAmount && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  ≈ ${(parseFloat(fromAmount) * prices[fromCrypto.symbol]).toFixed(2)}
-                </p>
-              )}
-            </div>
-          </div>
+          <SwapCryptoInput
+            label="Отдаёте"
+            crypto={fromCrypto}
+            amount={fromAmount}
+            onAmountChange={setFromAmount}
+            onSelectClick={() => setShowFromSelect(true)}
+            onMaxClick={handleMaxAmount}
+            prices={prices}
+            showMaxButton={true}
+          />
 
           {/* SWITCH BUTTON */}
           <div className="flex justify-center -my-2">
@@ -309,69 +247,22 @@ const SwapModal = ({ open, onClose, allCryptos, onTransactionComplete }: SwapMod
           </div>
 
           {/* TO */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between px-1">
-              <label className="text-sm font-semibold text-muted-foreground">Получаете</label>
-            </div>
-            
-            <div className="p-4 rounded-2xl bg-secondary/50 border-2 border-border hover:border-primary/50 transition-all">
-              <div className="flex items-center justify-between mb-3">
-                <button
-                  onClick={() => setShowToSelect(true)}
-                  className="flex items-center space-x-2 px-3 py-2 rounded-xl bg-card hover:bg-secondary border border-border transition-all"
-                >
-                  {toCrypto ? (
-                    <>
-                      <div className="relative w-7 h-7 rounded-full bg-secondary flex items-center justify-center overflow-visible">
-                        <div className="w-full h-full rounded-full overflow-hidden">
-                          {toCrypto.iconUrl ? (
-                            <img src={toCrypto.iconUrl} alt={toCrypto.symbol} className="w-full h-full object-cover" />
-                          ) : (
-                            <span className={`text-lg font-bold ${toCrypto.color}`}>{toCrypto.icon}</span>
-                          )}
-                        </div>
-                        {toCrypto.networkIconUrl && (
-                          <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-white dark:bg-gray-900 border border-white dark:border-gray-900 overflow-hidden shadow-md">
-                            <img src={toCrypto.networkIconUrl} alt={toCrypto.network} className="w-full h-full object-cover" />
-                          </div>
-                        )}
-                      </div>
-                      <span className="text-base font-bold text-foreground">{toCrypto.symbol}</span>
-                      <Icon name="ChevronDown" size={18} className="text-muted-foreground" />
-                    </>
-                  ) : (
-                    <span className="text-sm text-muted-foreground">Выберите</span>
-                  )}
-                </button>
-              </div>
-              
-              <div className="text-2xl font-bold text-foreground">
-                {toAmount || '0.00'}
-              </div>
-              
-              {toCrypto && prices[toCrypto.symbol] && toAmount && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  ≈ ${(parseFloat(toAmount) * prices[toCrypto.symbol]).toFixed(2)}
-                </p>
-              )}
-            </div>
-          </div>
+          <SwapCryptoInput
+            label="Получаете"
+            crypto={toCrypto}
+            amount={toAmount}
+            onSelectClick={() => setShowToSelect(true)}
+            prices={prices}
+            readOnly={true}
+          />
 
           {/* INFO */}
-          {fromCrypto && toCrypto && exchangeRate > 0 && (
-            <div className="p-4 rounded-xl bg-secondary/30 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Курс обмена</span>
-                <span className="text-sm font-semibold text-foreground">
-                  1 {fromCrypto.symbol} = {exchangeRate.toFixed(6)} {toCrypto.symbol}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Комиссия сервиса</span>
-                <span className="text-sm font-semibold text-foreground">{(fee * 100).toFixed(1)}%</span>
-              </div>
-            </div>
-          )}
+          <SwapInfoSection
+            fromCrypto={fromCrypto}
+            toCrypto={toCrypto}
+            exchangeRate={exchangeRate}
+            fee={fee}
+          />
 
           <Button
             onClick={handleSwap}
@@ -394,137 +285,20 @@ const SwapModal = ({ open, onClose, allCryptos, onTransactionComplete }: SwapMod
       </div>
 
       {/* FROM SELECT MODAL */}
-      {showFromSelect && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] animate-fade-in" onClick={() => setShowFromSelect(false)}>
-          <div className="absolute bottom-0 left-0 right-0 bg-card rounded-t-3xl pb-safe animate-slide-up max-h-[80vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
-            <div className="sticky top-0 bg-card z-10 pt-3 pb-4 px-6 border-b border-border">
-              <div className="w-12 h-1 bg-border rounded-full mx-auto mb-4"></div>
-              <div className="flex items-center justify-between mb-4">
-                <p className="text-lg font-bold text-foreground">Выберите криптовалюту</p>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setShowFromSelect(false)}
-                  className="hover:bg-muted rounded-xl"
-                >
-                  <Icon name="X" size={22} />
-                </Button>
-              </div>
-              <Input
-                value={searchFrom}
-                onChange={(e) => setSearchFrom(e.target.value)}
-                placeholder="Поиск..."
-                className="h-11 bg-secondary/50 border-border rounded-xl"
-              />
-            </div>
-            
-            <div className="overflow-y-auto flex-1 px-6 py-4">
-              <div className="space-y-2">
-                {filteredFromCryptos.map((crypto) => (
-                  <button
-                    key={crypto.id}
-                    onClick={() => {
-                      setFromCrypto(crypto);
-                      setShowFromSelect(false);
-                      setSearchFrom('');
-                    }}
-                    className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-secondary/50 transition-all"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className="relative w-10 h-10 rounded-full bg-secondary flex items-center justify-center overflow-visible">
-                        <div className="w-full h-full rounded-full overflow-hidden">
-                          {crypto.iconUrl ? (
-                            <img src={crypto.iconUrl} alt={crypto.symbol} className="w-full h-full object-cover" />
-                          ) : (
-                            <span className={`text-xl font-bold ${crypto.color}`}>{crypto.icon}</span>
-                          )}
-                        </div>
-                        {crypto.networkIconUrl && (
-                          <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-white dark:bg-gray-900 border-2 border-white dark:border-gray-900 overflow-hidden shadow-lg">
-                            <img src={crypto.networkIconUrl} alt={crypto.network} className="w-full h-full object-cover" />
-                          </div>
-                        )}
-                      </div>
-                      <div className="text-left">
-                        <p className="text-base font-bold text-foreground">{crypto.symbol}</p>
-                        <p className="text-xs text-muted-foreground">{crypto.name}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-semibold text-foreground">{crypto.balance}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <CryptoSelectModal
+        open={showFromSelect}
+        onClose={() => setShowFromSelect(false)}
+        cryptos={allCryptos}
+        onSelect={setFromCrypto}
+      />
 
       {/* TO SELECT MODAL */}
-      {showToSelect && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] animate-fade-in" onClick={() => setShowToSelect(false)}>
-          <div className="absolute bottom-0 left-0 right-0 bg-card rounded-t-3xl pb-safe animate-slide-up max-h-[80vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
-            <div className="sticky top-0 bg-card z-10 pt-3 pb-4 px-6 border-b border-border">
-              <div className="w-12 h-1 bg-border rounded-full mx-auto mb-4"></div>
-              <div className="flex items-center justify-between mb-4">
-                <p className="text-lg font-bold text-foreground">Выберите криптовалюту</p>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setShowToSelect(false)}
-                  className="hover:bg-muted rounded-xl"
-                >
-                  <Icon name="X" size={22} />
-                </Button>
-              </div>
-              <Input
-                value={searchTo}
-                onChange={(e) => setSearchTo(e.target.value)}
-                placeholder="Поиск..."
-                className="h-11 bg-secondary/50 border-border rounded-xl"
-              />
-            </div>
-            
-            <div className="overflow-y-auto flex-1 px-6 py-4">
-              <div className="space-y-2">
-                {filteredToCryptos.map((crypto) => (
-                  <button
-                    key={crypto.id}
-                    onClick={() => {
-                      setToCrypto(crypto);
-                      setShowToSelect(false);
-                      setSearchTo('');
-                    }}
-                    className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-secondary/50 transition-all"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className="relative w-10 h-10 rounded-full bg-secondary flex items-center justify-center overflow-visible">
-                        <div className="w-full h-full rounded-full overflow-hidden">
-                          {crypto.iconUrl ? (
-                            <img src={crypto.iconUrl} alt={crypto.symbol} className="w-full h-full object-cover" />
-                          ) : (
-                            <span className={`text-xl font-bold ${crypto.color}`}>{crypto.icon}</span>
-                          )}
-                        </div>
-                        {crypto.networkIconUrl && (
-                          <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-white dark:bg-gray-900 border-2 border-white dark:border-gray-900 overflow-hidden shadow-lg">
-                            <img src={crypto.networkIconUrl} alt={crypto.network} className="w-full h-full object-cover" />
-                          </div>
-                        )}
-                      </div>
-                      <div className="text-left">
-                        <p className="text-base font-bold text-foreground">{crypto.symbol}</p>
-                        <p className="text-xs text-muted-foreground">{crypto.name}</p>
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <CryptoSelectModal
+        open={showToSelect}
+        onClose={() => setShowToSelect(false)}
+        cryptos={allCryptos}
+        onSelect={setToCrypto}
+      />
     </div>
   );
 };
