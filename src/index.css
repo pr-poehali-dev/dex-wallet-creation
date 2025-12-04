@@ -179,4 +179,25 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  .animate-snowfall {
+    animation: snowfall linear infinite;
+  }
+
+  @keyframes snowfall {
+    0% {
+      transform: translateY(-50px) rotate(0deg);
+      opacity: 0;
+    }
+    10% {
+      opacity: 0.6;
+    }
+    90% {
+      opacity: 0.3;
+    }
+    100% {
+      transform: translateY(100vh) rotate(360deg);
+      opacity: 0;
+    }
+  }
 }
