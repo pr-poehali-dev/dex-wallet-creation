@@ -365,7 +365,15 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
     <div className="min-h-screen bg-background pb-24 overflow-x-hidden">
       <div className="bg-gradient-to-b from-primary to-primary/90 px-4 sm:px-6 pt-safe pb-6 sm:pb-8 rounded-b-3xl shadow-lg">
         <div className="flex items-center justify-between pt-4 pb-4 sm:pb-6">
-          <h1 className="text-lg sm:text-xl font-bold text-white">Кошелек</h1>
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg border-2 border-white/30">
+              <span className="text-white font-bold text-lg sm:text-xl">{username[0].toUpperCase()}</span>
+            </div>
+            <div>
+              <p className="text-white font-bold text-base sm:text-lg">{username}</p>
+              <p className="text-white/70 text-xs sm:text-sm">Ywallet DEX</p>
+            </div>
+          </div>
           <div className="flex items-center space-x-2">
             {isAdmin && (
               <Button
@@ -380,11 +388,10 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
             )}
             <Button
               variant="ghost"
-              size="icon"
               onClick={handleLogout}
-              className="hover:bg-white/10 text-white rounded-xl active:scale-95 transition-all"
+              className="hover:bg-white/10 text-destructive rounded-xl active:scale-95 transition-all px-3 py-2 font-semibold text-sm"
             >
-              <Icon name="Settings" size={22} />
+              Выйти
             </Button>
           </div>
         </div>
@@ -537,63 +544,7 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
           </div>
         )}
 
-        {activeTab === 'profile' && (
-          <div className="space-y-4 pt-4">
-            <h2 className="text-2xl font-bold text-foreground px-1">Настройки</h2>
-            <Card className="p-5 bg-card border-border rounded-xl shadow-sm space-y-2">
-              <div className="flex items-center space-x-4 pb-4 border-b border-border">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-md">
-                  <span className="text-white font-bold text-2xl">{username[0].toUpperCase()}</span>
-                </div>
-                <div>
-                  <p className="text-lg font-bold text-foreground">{username}</p>
-                  <p className="text-sm text-muted-foreground">Trust Wallet</p>
-                </div>
-              </div>
-              
-              <Button
-                variant="ghost"
-                className="w-full justify-start h-14 rounded-xl hover:bg-secondary text-foreground"
-              >
-                <Icon name="User" size={22} className="mr-3 text-muted-foreground" />
-                <span className="text-base">Профиль</span>
-              </Button>
 
-              <Button
-                variant="ghost"
-                className="w-full justify-start h-14 rounded-xl hover:bg-secondary text-foreground"
-              >
-                <Icon name="Lock" size={22} className="mr-3 text-muted-foreground" />
-                <span className="text-base">Безопасность</span>
-              </Button>
-
-              <Button
-                variant="ghost"
-                className="w-full justify-start h-14 rounded-xl hover:bg-secondary text-foreground"
-              >
-                <Icon name="Bell" size={22} className="mr-3 text-muted-foreground" />
-                <span className="text-base">Уведомления</span>
-              </Button>
-
-              <Button
-                variant="ghost"
-                className="w-full justify-start h-14 rounded-xl hover:bg-secondary text-foreground"
-              >
-                <Icon name="Globe" size={22} className="mr-3 text-muted-foreground" />
-                <span className="text-base">Язык и регион</span>
-              </Button>
-
-              <Button
-                variant="ghost"
-                onClick={handleLogout}
-                className="w-full justify-start h-14 rounded-xl hover:bg-destructive/10 text-destructive"
-              >
-                <Icon name="LogOut" size={22} className="mr-3" />
-                <span className="text-base font-semibold">Выйти</span>
-              </Button>
-            </Card>
-          </div>
-        )}
       </div>
 
       <nav className="fixed bottom-0 left-0 right-0 bg-card/98 backdrop-blur-xl border-t border-border shadow-lg z-50 pb-safe">
@@ -626,16 +577,6 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
           >
             <Icon name="TrendingUp" size={22} className="sm:w-6 sm:h-6" />
             <span className="text-[10px] sm:text-xs font-semibold">DeFi</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('profile')}
-            className={`flex flex-col items-center space-y-0.5 sm:space-y-1 py-2 px-3 sm:px-5 rounded-xl transition-all active:scale-95 ${
-              activeTab === 'profile' ? 'text-primary' : 'text-muted-foreground'
-            }`}
-          >
-            <Icon name="Settings" size={22} className="sm:w-6 sm:h-6" />
-            <span className="text-[10px] sm:text-xs font-semibold">Настройки</span>
           </button>
         </div>
       </nav>
