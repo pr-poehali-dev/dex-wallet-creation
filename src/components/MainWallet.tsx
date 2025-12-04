@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import Icon from '@/components/ui/icon';
 import QRModal from '@/components/QRModal';
 import SendModal from '@/components/SendModal';
@@ -75,261 +74,262 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
     setShowSend(true);
   };
 
+  const handleLogout = () => {
+    const STORAGE_KEY = 'dex_wallet_data';
+    localStorage.removeItem(STORAGE_KEY);
+    window.location.reload();
+  };
+
   return (
-    <div className="min-h-screen bg-background pb-24">
-      <div className="px-4 pt-safe space-y-4">
-        <div className="flex items-center justify-between pt-4 pb-2">
-          <div>
-            <p className="text-xs text-muted-foreground">Привет,</p>
-            <h1 className="text-xl font-bold text-foreground">{username}</h1>
+    <div className="min-h-screen pb-24">
+      <div className="px-5 pt-safe space-y-6">
+        <div className="flex items-center justify-between pt-6 pb-2">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary via-secondary to-primary shadow-lg flex items-center justify-center">
+              <span className="text-white font-bold text-base">{username[0].toUpperCase()}</span>
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-foreground">{username}</h1>
+              <p className="text-xs text-muted-foreground">Мой кошелек</p>
+            </div>
           </div>
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg">
-            <span className="text-white font-bold text-lg">{username[0].toUpperCase()}</span>
-          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleLogout}
+            className="hover:bg-muted/50 rounded-xl"
+          >
+            <Icon name="LogOut" size={20} className="text-muted-foreground" />
+          </Button>
         </div>
 
         {activeTab === 'home' && (
-          <div className="space-y-4">
-            <Card className="p-6 bg-gradient-to-br from-primary/20 via-primary/10 to-secondary/20 border-primary/30 shadow-xl">
-              <div className="space-y-2">
+          <div className="space-y-6">
+            <Card className="p-6 bg-gradient-to-br from-primary/10 via-secondary/5 to-primary/10 border-primary/20 shadow-2xl rounded-3xl backdrop-blur-xl">
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Общий баланс</p>
-                  <Icon name="Eye" size={16} className="text-muted-foreground" />
+                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Баланс портфеля</p>
+                  <Icon name="Eye" size={18} className="text-muted-foreground" />
                 </div>
-                <h2 className="text-4xl font-bold text-foreground tracking-tight">
+                <h2 className="text-5xl font-extrabold text-foreground tracking-tight">
                   ${totalBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                 </h2>
                 <div className="flex items-center space-x-2 pt-1">
-                  <div className="flex items-center space-x-1 text-green-500">
-                    <Icon name="TrendingUp" size={14} />
-                    <span className="text-xs font-medium">+12.5%</span>
+                  <div className="flex items-center space-x-1 px-2 py-1 rounded-lg bg-green-500/10">
+                    <Icon name="TrendingUp" size={14} className="text-green-500" />
+                    <span className="text-sm font-semibold text-green-500">+12.5%</span>
                   </div>
-                  <span className="text-xs text-muted-foreground">за 24ч</span>
+                  <span className="text-xs text-muted-foreground">сегодня</span>
                 </div>
               </div>
             </Card>
 
-            <div className="flex space-x-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide snap-x snap-mandatory">
-              {topCryptos.map((crypto) => (
-                <Card key={crypto.id} className="flex-shrink-0 w-40 snap-center p-4 bg-card/80 border-border active:scale-95 transition-transform">
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className={`w-9 h-9 rounded-full bg-muted/50 flex items-center justify-center text-lg font-bold ${crypto.color}`}>
-                        {crypto.icon}
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-xs text-muted-foreground">{crypto.symbol}</p>
-                      <p className="text-base font-bold text-foreground truncate">{crypto.balance}</p>
-                      <p className="text-xs text-muted-foreground">${crypto.usdValue}</p>
-                    </div>
-                    <div className="flex flex-col space-y-1.5">
-                      <Button
-                        onClick={() => handleReceive(crypto)}
-                        size="sm"
-                        variant="outline"
-                        className="w-full h-7 text-xs"
-                      >
-                        <Icon name="Download" size={12} className="mr-1" />
-                        Получить
-                      </Button>
-                      <Button
-                        onClick={() => handleSend(crypto)}
-                        size="sm"
-                        className="w-full h-7 text-xs bg-primary/90 hover:bg-primary"
-                      >
-                        <Icon name="Send" size={12} className="mr-1" />
-                        Отправить
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              ))}
+            <div className="grid grid-cols-3 gap-3">
+              <Button
+                onClick={() => topCryptos[0] && handleReceive(topCryptos[0])}
+                className="h-16 flex flex-col items-center justify-center space-y-1 bg-muted/30 hover:bg-muted/50 text-foreground rounded-2xl border border-border/50 active:scale-95 transition-all"
+              >
+                <Icon name="ArrowDown" size={20} className="text-primary" />
+                <span className="text-xs font-semibold">Получить</span>
+              </Button>
+              <Button
+                onClick={() => topCryptos[0] && handleSend(topCryptos[0])}
+                className="h-16 flex flex-col items-center justify-center space-y-1 bg-muted/30 hover:bg-muted/50 text-foreground rounded-2xl border border-border/50 active:scale-95 transition-all"
+              >
+                <Icon name="ArrowUp" size={20} className="text-primary" />
+                <span className="text-xs font-semibold">Отправить</span>
+              </Button>
+              <Button
+                className="h-16 flex flex-col items-center justify-center space-y-1 bg-muted/30 hover:bg-muted/50 text-foreground rounded-2xl border border-border/50 active:scale-95 transition-all"
+              >
+                <Icon name="RefreshCw" size={20} className="text-primary" />
+                <span className="text-xs font-semibold">Обменять</span>
+              </Button>
             </div>
 
-            <div className="pt-2">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-base font-bold text-foreground">Все активы</h3>
-                <Button variant="ghost" size="sm" className="text-primary h-8">
-                  <Icon name="Search" size={14} className="mr-1" />
-                  Поиск
-                </Button>
-              </div>
-              <ScrollArea className="h-[calc(100vh-420px)]">
-                <div className="space-y-1.5">
-                  {cryptoList.map((crypto) => (
-                    <Card key={crypto.id} className="p-3 bg-card/50 border-border active:bg-card active:scale-[0.98] transition-all">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <div className={`w-10 h-10 rounded-full bg-muted flex items-center justify-center text-lg font-bold ${crypto.color}`}>
-                            {crypto.icon}
-                          </div>
-                          <div>
-                            <p className="text-sm font-semibold text-foreground">{crypto.name}</p>
-                            <p className="text-xs text-muted-foreground">{crypto.network}</p>
-                          </div>
+            <div>
+              <h3 className="text-base font-bold text-foreground mb-4 px-1">Токены</h3>
+              <div className="space-y-2">
+                {cryptoList.map((crypto) => (
+                  <Card
+                    key={crypto.id}
+                    className="p-4 bg-card/50 hover:bg-card/80 border-border/50 backdrop-blur-sm active:scale-[0.98] transition-all rounded-2xl cursor-pointer"
+                    onClick={() => setSelectedCrypto(crypto)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                          <span className={`text-xl font-bold ${crypto.color}`}>{crypto.icon}</span>
                         </div>
-                        <div className="text-right">
-                          <p className="text-sm font-semibold text-foreground">{crypto.balance}</p>
-                          <p className="text-xs text-muted-foreground">${crypto.usdValue}</p>
+                        <div>
+                          <p className="text-sm font-bold text-foreground">{crypto.symbol}</p>
+                          <p className="text-xs text-muted-foreground">{crypto.name}</p>
                         </div>
                       </div>
-                    </Card>
-                  ))}
-                </div>
-              </ScrollArea>
+                      <div className="text-right">
+                        <p className="text-sm font-bold text-foreground">${crypto.usdValue}</p>
+                        <p className="text-xs text-muted-foreground">{crypto.balance} {crypto.symbol}</p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
             </div>
           </div>
         )}
 
         {activeTab === 'wallets' && (
-          <ScrollArea className="h-[calc(100vh-180px)]">
+          <div className="space-y-4 pt-4">
+            <h2 className="text-2xl font-bold text-foreground px-1">Кошельки</h2>
             <div className="space-y-2">
               {cryptoList.map((crypto) => (
-                <Card key={crypto.id} className="p-4 bg-card border-border">
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-10 h-10 rounded-full bg-muted flex items-center justify-center text-lg font-bold ${crypto.color}`}>
-                          {crypto.icon}
-                        </div>
-                        <div>
-                          <p className="text-sm font-semibold text-foreground">{crypto.name}</p>
-                          <p className="text-xs text-muted-foreground">{crypto.network}</p>
-                        </div>
+                <Card key={crypto.id} className="p-4 bg-card/50 border-border/50 rounded-2xl">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                        <span className={`text-lg ${crypto.color}`}>{crypto.icon}</span>
                       </div>
-                      <div className="text-right">
-                        <p className="text-sm font-semibold text-foreground">{crypto.balance}</p>
-                        <p className="text-xs text-muted-foreground">${crypto.usdValue}</p>
+                      <div>
+                        <p className="text-sm font-bold text-foreground">{crypto.name}</p>
+                        <p className="text-xs text-muted-foreground">{crypto.network}</p>
                       </div>
                     </div>
-                    <div className="p-2.5 rounded-lg bg-muted/30">
-                      <p className="text-xs text-muted-foreground mb-1">Адрес:</p>
-                      <p className="text-xs font-mono text-foreground break-all">{crypto.address}</p>
-                    </div>
-                    <div className="flex space-x-2">
-                      <Button
-                        onClick={() => handleReceive(crypto)}
-                        variant="outline"
-                        size="sm"
-                        className="flex-1 h-9"
-                      >
-                        <Icon name="Download" size={14} className="mr-1" />
-                        Получить
-                      </Button>
-                      <Button
-                        onClick={() => handleSend(crypto)}
-                        size="sm"
-                        className="flex-1 h-9 bg-primary hover:bg-primary/90"
-                      >
-                        <Icon name="Send" size={14} className="mr-1" />
-                        Отправить
-                      </Button>
-                    </div>
+                  </div>
+                  <div className="bg-muted/30 p-3 rounded-xl">
+                    <p className="text-xs text-muted-foreground mb-1">Адрес</p>
+                    <p className="text-xs font-mono text-foreground break-all">{crypto.address}</p>
                   </div>
                 </Card>
               ))}
             </div>
-          </ScrollArea>
+          </div>
         )}
 
         {activeTab === 'history' && (
-          <div className="flex items-center justify-center h-[calc(100vh-240px)]">
-            <div className="text-center space-y-2">
-              <div className="w-16 h-16 rounded-full bg-muted/30 flex items-center justify-center mx-auto">
-                <Icon name="History" size={32} className="text-muted-foreground" />
+          <div className="space-y-4 pt-4">
+            <h2 className="text-2xl font-bold text-foreground px-1">История</h2>
+            <Card className="p-6 bg-card/50 border-border/50 rounded-2xl">
+              <div className="text-center py-8">
+                <Icon name="History" size={48} className="text-muted-foreground mx-auto mb-3" />
+                <p className="text-muted-foreground">История транзакций пуста</p>
               </div>
-              <p className="text-base font-medium text-foreground">Нет транзакций</p>
-              <p className="text-sm text-muted-foreground">История появится здесь</p>
-            </div>
+            </Card>
           </div>
         )}
 
         {activeTab === 'profile' && (
-          <div className="space-y-4">
-            <Card className="p-4 bg-card border-border">
-              <div className="flex items-center space-x-3">
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg">
+          <div className="space-y-4 pt-4">
+            <h2 className="text-2xl font-bold text-foreground px-1">Профиль</h2>
+            <Card className="p-5 bg-card/50 border-border/50 rounded-2xl space-y-3">
+              <div className="flex items-center space-x-4 pb-4 border-b border-border">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary via-secondary to-primary shadow-lg flex items-center justify-center">
                   <span className="text-white font-bold text-2xl">{username[0].toUpperCase()}</span>
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-foreground">{username}</h2>
-                  <p className="text-xs text-muted-foreground">DEX Wallet User</p>
+                  <p className="text-lg font-bold text-foreground">{username}</p>
+                  <p className="text-xs text-muted-foreground">DEX Wallet</p>
                 </div>
               </div>
-            </Card>
+              
+              <Button
+                variant="ghost"
+                className="w-full justify-start h-12 rounded-xl hover:bg-muted/50"
+              >
+                <Icon name="Settings" size={20} className="mr-3 text-muted-foreground" />
+                <span className="text-sm">Настройки</span>
+              </Button>
 
-            <div className="space-y-1.5">
-              {[
-                { icon: 'Settings', label: 'Настройки', desc: 'Управление кошельком' },
-                { icon: 'Shield', label: 'Безопасность', desc: 'Seed-фраза и пароль' },
-                { icon: 'Bell', label: 'Уведомления', desc: 'Настройка оповещений' },
-                { icon: 'Globe', label: 'Сеть', desc: 'Выбор сети' },
-                { icon: 'HelpCircle', label: 'Помощь', desc: 'Поддержка и FAQ' },
-              ].map((item, index) => (
-                <Card key={index} className="p-3 bg-card border-border active:bg-card/80 active:scale-[0.98] transition-all">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Icon name={item.icon as any} size={18} className="text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-foreground">{item.label}</p>
-                        <p className="text-xs text-muted-foreground">{item.desc}</p>
-                      </div>
-                    </div>
-                    <Icon name="ChevronRight" size={18} className="text-muted-foreground" />
-                  </div>
-                </Card>
-              ))}
-            </div>
+              <Button
+                variant="ghost"
+                className="w-full justify-start h-12 rounded-xl hover:bg-muted/50"
+              >
+                <Icon name="Lock" size={20} className="mr-3 text-muted-foreground" />
+                <span className="text-sm">Безопасность</span>
+              </Button>
+
+              <Button
+                variant="ghost"
+                onClick={handleLogout}
+                className="w-full justify-start h-12 rounded-xl hover:bg-destructive/10 text-destructive"
+              >
+                <Icon name="LogOut" size={20} className="mr-3" />
+                <span className="text-sm">Выйти из кошелька</span>
+              </Button>
+            </Card>
           </div>
         )}
       </div>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-card/98 backdrop-blur-xl border-t border-border shadow-2xl z-50 pb-safe">
-        <div className="flex items-center justify-around h-16 px-2">
-          {[
-            { id: 'home', icon: 'Home', label: 'Главная' },
-            { id: 'wallets', icon: 'Wallet', label: 'Кошельки' },
-            { id: 'history', icon: 'History', label: 'История' },
-            { id: 'profile', icon: 'User', label: 'Профиль' },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`flex flex-col items-center justify-center space-y-0.5 px-3 py-2 rounded-xl transition-all active:scale-95 ${
-                activeTab === tab.id
-                  ? 'text-primary bg-primary/10'
-                  : 'text-muted-foreground active:text-foreground active:bg-muted/50'
-              }`}
-            >
-              <Icon name={tab.icon as any} size={22} />
-              <span className="text-[10px] font-medium">{tab.label}</span>
-            </button>
-          ))}
+      <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-2xl border-t border-border/50 shadow-2xl z-50 pb-safe">
+        <div className="flex items-center justify-around h-20 px-4">
+          <button
+            onClick={() => setActiveTab('home')}
+            className={`flex flex-col items-center space-y-1 py-2 px-4 rounded-2xl transition-all ${
+              activeTab === 'home' ? 'bg-primary/10' : ''
+            }`}
+          >
+            <Icon name="Home" size={22} className={activeTab === 'home' ? 'text-primary' : 'text-muted-foreground'} />
+            <span className={`text-xs font-medium ${activeTab === 'home' ? 'text-primary' : 'text-muted-foreground'}`}>
+              Главная
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('wallets')}
+            className={`flex flex-col items-center space-y-1 py-2 px-4 rounded-2xl transition-all ${
+              activeTab === 'wallets' ? 'bg-primary/10' : ''
+            }`}
+          >
+            <Icon name="Wallet" size={22} className={activeTab === 'wallets' ? 'text-primary' : 'text-muted-foreground'} />
+            <span className={`text-xs font-medium ${activeTab === 'wallets' ? 'text-primary' : 'text-muted-foreground'}`}>
+              Кошельки
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('history')}
+            className={`flex flex-col items-center space-y-1 py-2 px-4 rounded-2xl transition-all ${
+              activeTab === 'history' ? 'bg-primary/10' : ''
+            }`}
+          >
+            <Icon name="Clock" size={22} className={activeTab === 'history' ? 'text-primary' : 'text-muted-foreground'} />
+            <span className={`text-xs font-medium ${activeTab === 'history' ? 'text-primary' : 'text-muted-foreground'}`}>
+              История
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('profile')}
+            className={`flex flex-col items-center space-y-1 py-2 px-4 rounded-2xl transition-all ${
+              activeTab === 'profile' ? 'bg-primary/10' : ''
+            }`}
+          >
+            <Icon name="User" size={22} className={activeTab === 'profile' ? 'text-primary' : 'text-muted-foreground'} />
+            <span className={`text-xs font-medium ${activeTab === 'profile' ? 'text-primary' : 'text-foreground'}`}>
+              Профиль
+            </span>
+          </button>
         </div>
       </nav>
 
-      {selectedCrypto && (
-        <>
-          <QRModal
-            open={showQR}
-            onClose={() => {
-              setShowQR(false);
-              setSelectedCrypto(null);
-            }}
-            crypto={selectedCrypto}
-          />
-          <SendModal
-            open={showSend}
-            onClose={() => {
-              setShowSend(false);
-              setSelectedCrypto(null);
-            }}
-            crypto={selectedCrypto}
-          />
-        </>
+      {showQR && selectedCrypto && (
+        <QRModal
+          crypto={selectedCrypto}
+          onClose={() => {
+            setShowQR(false);
+            setSelectedCrypto(null);
+          }}
+        />
+      )}
+
+      {showSend && selectedCrypto && (
+        <SendModal
+          crypto={selectedCrypto}
+          onClose={() => {
+            setShowSend(false);
+            setSelectedCrypto(null);
+          }}
+        />
       )}
     </div>
   );

@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -6,35 +6,35 @@
 
 @layer base {
   :root {
-    --background: 220 25% 10%;
-    --foreground: 210 40% 98%;
+    --background: 250 24% 9%;
+    --foreground: 0 0% 100%;
 
-    --card: 222 20% 14%;
-    --card-foreground: 210 40% 98%;
+    --card: 250 20% 12%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 222 20% 14%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 250 20% 12%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 199 89% 48%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 263 70% 60%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 262 83% 58%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 285 70% 65%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 220 15% 25%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 250 15% 18%;
+    --muted-foreground: 240 5% 64%;
 
-    --accent: 262 83% 58%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 263 70% 60%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 20%;
-    --input: 220 15% 20%;
-    --ring: 199 89% 48%;
+    --border: 250 15% 18%;
+    --input: 250 15% 18%;
+    --ring: 263 70% 60%;
 
-    --radius: 1rem;
+    --radius: 1.25rem;
 
     --sidebar-background: 220 25% 10%;
     --sidebar-foreground: 210 40% 98%;
@@ -54,12 +54,13 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: "Rubik", sans-serif;
+    font-family: "Inter", sans-serif;
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
     overflow-x: hidden;
+    background: linear-gradient(135deg, #0f0d1e 0%, #1a1535 100%);
   }
 
   html {
