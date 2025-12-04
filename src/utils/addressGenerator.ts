@@ -10,11 +10,21 @@ export const generateAddress = (network: string): string => {
     case 'Bitcoin':
       return 'bc1q' + random(39, alphanumeric);
     
+    case 'Bitcoin Cash':
+      return 'bitcoincash:q' + random(40, alphanumeric);
+    
     case 'Ethereum':
+    case 'ERC20':
     case 'BSC':
+    case 'BEP20':
     case 'Polygon':
     case 'Optimism':
     case 'Arbitrum':
+    case 'Ethereum Classic':
+    case 'VeChain':
+    case 'Fantom':
+    case 'Celo':
+    case 'Theta':
       return '0x' + random(40, chars);
     
     case 'TRC20':
@@ -32,6 +42,9 @@ export const generateAddress = (network: string): string => {
     
     case 'Polkadot':
       return '1' + random(47, alphanumeric);
+    
+    case 'Kusama':
+      return random(48, alphanumeric);
     
     case 'Dogecoin':
       return 'D' + random(33, alphanumeric);
@@ -51,9 +64,6 @@ export const generateAddress = (network: string): string => {
     case 'Stellar':
       return 'G' + random(55, alphanumeric);
     
-    case 'VeChain':
-      return '0x' + random(40, chars);
-    
     case 'Algorand':
       return random(58, alphanumeric);
     
@@ -66,17 +76,88 @@ export const generateAddress = (network: string): string => {
     case 'Near':
       return random(12, 'abcdefghijklmnopqrstuvwxyz0123456789') + '.near';
     
-    case 'Fantom':
-      return '0x' + random(40, chars);
-    
     case 'Aptos':
-      return '0x' + random(64, chars);
-    
     case 'Sui':
       return '0x' + random(64, chars);
     
     case 'TON':
       return 'EQ' + random(46, alphanumeric);
+    
+    case 'Zcash':
+      return 't1' + random(33, alphanumeric);
+    
+    case 'Dash':
+      return 'X' + random(33, alphanumeric);
+    
+    case 'EOS':
+      return random(12, 'abcdefghijklmnopqrstuvwxyz12345');
+    
+    case 'Tezos':
+      return 'tz1' + random(33, alphanumeric);
+    
+    case 'IOTA':
+      return 'iota1' + random(60, alphanumeric);
+    
+    case 'NEO':
+      return 'A' + random(33, alphanumeric);
+    
+    case 'Qtum':
+      return 'Q' + random(33, alphanumeric);
+    
+    case 'Ravencoin':
+      return 'R' + random(33, alphanumeric);
+    
+    case 'Waves':
+      return '3P' + random(33, alphanumeric);
+    
+    case 'ICON':
+      return 'hx' + random(40, chars);
+    
+    case 'Ontology':
+      return 'A' + random(33, alphanumeric);
+    
+    case 'Nano':
+      return 'nano_' + random(60, alphanumeric);
+    
+    case 'Siacoin':
+      return random(76, chars);
+    
+    case 'Arweave':
+      return random(43, alphanumeric);
+    
+    case 'Kava':
+      return 'kava1' + random(38, alphanumeric);
+    
+    case 'Secret':
+      return 'secret1' + random(38, alphanumeric);
+    
+    case 'Nervos':
+      return 'ckb1' + random(42, alphanumeric);
+    
+    case 'THORChain':
+      return 'thor1' + random(38, alphanumeric);
+    
+    case 'Harmony':
+      return 'one1' + random(38, alphanumeric);
+    
+    case 'Flow':
+      return '0x' + random(16, chars);
+    
+    case 'Elrond':
+    case 'MultiversX':
+      return 'erd1' + random(58, alphanumeric);
+    
+    case 'Zilliqa':
+      return 'zil1' + random(38, alphanumeric);
+    
+    case 'Stacks':
+      return 'SP' + random(39, alphanumeric);
+    
+    case 'Helium':
+      return '13' + random(48, alphanumeric);
+    
+    case 'Kaspa':
+      return 'kaspa:' + random(61, alphanumeric);
     
     default:
       return '0x' + random(40, chars);
@@ -91,7 +172,12 @@ export const generateWalletAddresses = (seedPhrase: string[]): Map<string, strin
     'Bitcoin', 'Ethereum', 'BSC', 'TRC20', 'Cardano', 'Solana', 'XRP Ledger',
     'Polkadot', 'Dogecoin', 'Polygon', 'Litecoin', 'Avalanche', 'Cosmos',
     'Tron', 'Monero', 'Stellar', 'VeChain', 'Algorand', 'Filecoin', 'Hedera',
-    'Near', 'Fantom', 'Aptos', 'Optimism', 'Arbitrum', 'Sui', 'TON'
+    'Near', 'Fantom', 'Aptos', 'Optimism', 'Arbitrum', 'Sui', 'TON',
+    'Bitcoin Cash', 'Ethereum Classic', 'Zcash', 'Dash', 'Theta', 'EOS',
+    'Tezos', 'IOTA', 'NEO', 'Qtum', 'Ravencoin', 'Waves', 'ICON', 'Ontology',
+    'Nano', 'Siacoin', 'Arweave', 'Kava', 'Secret', 'Nervos', 'THORChain',
+    'Celo', 'Harmony', 'Flow', 'Elrond', 'MultiversX', 'Zilliqa', 'Kusama',
+    'Stacks', 'Helium', 'Kaspa', 'ERC20', 'BEP20'
   ];
 
   networks.forEach((network, index) => {
@@ -101,11 +187,13 @@ export const generateWalletAddresses = (seedPhrase: string[]): Map<string, strin
       hash = ((hash << 5) - hash) + seedWithSalt.charCodeAt(i);
       hash = hash & hash;
     }
+    const originalRandom = Math.random;
     Math.random = () => {
       hash = (hash * 9301 + 49297) % 233280;
       return hash / 233280;
     };
     addressMap.set(network, generateAddress(network));
+    Math.random = originalRandom;
   });
 
   return addressMap;
