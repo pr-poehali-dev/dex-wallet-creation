@@ -37,7 +37,6 @@ const Index = () => {
             addresses: Object.fromEntries(newAddresses)
           };
           localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData));
-          console.log('Addresses migrated, TRC20:', newAddresses.get('TRC20'));
         }
         
         setWalletAddresses(addressesMap);
@@ -61,8 +60,6 @@ const Index = () => {
     const newSeed = generateSeedPhrase();
     setSeedPhrase(newSeed);
     const addresses = generateWalletAddresses(newSeed);
-    console.log('Generated addresses:', Array.from(addresses.entries()));
-    console.log('TRC20 address:', addresses.get('TRC20'));
     setWalletAddresses(addresses);
     setStep('seed');
   };
@@ -93,8 +90,6 @@ const Index = () => {
   const handleRestoreWallet = (mnemonic: string[]) => {
     setSeedPhrase(mnemonic);
     const addresses = generateWalletAddresses(mnemonic);
-    console.log('Restored addresses:', Array.from(addresses.entries()));
-    console.log('TRC20 address:', addresses.get('TRC20'));
     setWalletAddresses(addresses);
     setStep('username');
   };

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
@@ -51,7 +51,7 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
     localStorage.setItem(STORAGE_KEY_SELECTED, JSON.stringify(ids));
   };
 
-  const allCryptoList: Crypto[] = [
+  const allCryptoList: Crypto[] = useMemo(() => [
     // Стейблкоины в разных сетях
     { id: '1', name: 'Tether (TRC20)', symbol: 'USDT', network: 'TRC20', balance: '0.00', usdValue: '0.00', icon: '₮', iconUrl: 'https://cdn.poehali.dev/files/64ba7feb-f8b0-4f82-8ed8-a8b33c26c00d.png', networkIconUrl: 'https://cryptologos.cc/logos/tron-trx-logo.png', address: walletAddresses.get('TRC20') || 'TXYZabcd1234...', color: 'text-green-600' },
     { id: '106', name: 'Tether (ERC20)', symbol: 'USDT', network: 'ERC20', balance: '0.00', usdValue: '0.00', icon: '₮', iconUrl: 'https://cdn.poehali.dev/files/64ba7feb-f8b0-4f82-8ed8-a8b33c26c00d.png', networkIconUrl: 'https://cryptologos.cc/logos/ethereum-eth-logo.png', address: walletAddresses.get('Ethereum') || '0x742d35...', color: 'text-green-600' },
@@ -179,7 +179,7 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
     { id: '103', name: 'Render', symbol: 'RNDR', network: 'Ethereum', balance: '0', usdValue: '0.00', icon: 'R', iconUrl: 'https://cryptologos.cc/logos/render-token-rndr-logo.png', address: walletAddresses.get('Ethereum') || '0xrndr...', color: 'text-orange-600' },
     { id: '104', name: 'MultiversX', symbol: 'EGLD', network: 'MultiversX', balance: '0', usdValue: '0.00', icon: 'M', iconUrl: 'https://cryptologos.cc/logos/multiversx-egld-egld-logo.png', address: walletAddresses.get('MultiversX') || 'erd1...', color: 'text-gray-700' },
     { id: '105', name: 'Kaspa', symbol: 'KAS', network: 'Kaspa', balance: '0', usdValue: '0.00', icon: 'K', iconUrl: 'https://cryptologos.cc/logos/kaspa-kas-logo.png', address: walletAddresses.get('Kaspa') || 'kaspa:...', color: 'text-blue-600' },
-  ];
+  ], [walletAddresses]);
 
   const mainCryptos = allCryptoList.filter(c => selectedCryptoIds.includes(c.id));
   const totalBalance = mainCryptos.reduce((sum, c) => sum + parseFloat(c.usdValue.replace(',', '')), 0);
