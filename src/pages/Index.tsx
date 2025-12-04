@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import * as bip39 from 'bip39';
 import WalletChoice from '@/components/WalletChoice';
 import CreateWallet from '@/components/CreateWallet';
@@ -10,11 +10,38 @@ import Welcome from '@/components/Welcome';
 import MainWallet from '@/components/MainWallet';
 import { generateWalletAddresses } from '@/utils/addressGenerator';
 
+const STORAGE_KEY = 'dex_wallet_data';
+
 const Index = () => {
   const [step, setStep] = useState<'choice' | 'create' | 'restore' | 'seed' | 'confirm' | 'username' | 'welcome' | 'main'>('choice');
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [username, setUsername] = useState('');
   const [walletAddresses, setWalletAddresses] = useState<Map<string, string>>(new Map());
+
+  useEffect(() => {
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    if (savedData) {
+      try {
+        const data = JSON.parse(savedData);
+        setSeedPhrase(data.seedPhrase || []);
+        setUsername(data.username || '');
+        const addressesMap = new Map(Object.entries(data.addresses || {}));
+        setWalletAddresses(addressesMap);
+        setStep('main');
+      } catch (error) {
+        console.error('Ошибка загрузки данных кошелька:', error);
+      }
+    }
+  }, []);
+
+  const saveWalletData = (seed: string[], name: string, addresses: Map<string, string>) => {
+    const data = {
+      seedPhrase: seed,
+      username: name,
+      addresses: Object.fromEntries(addresses)
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  };
 
   const handleCreateWallet = () => {
     const newSeed = generateSeedPhrase();
@@ -34,6 +61,7 @@ const Index = () => {
 
   const handleUsernameCreated = (name: string) => {
     setUsername(name);
+    saveWalletData(seedPhrase, name, walletAddresses);
     setStep('welcome');
   };
 
