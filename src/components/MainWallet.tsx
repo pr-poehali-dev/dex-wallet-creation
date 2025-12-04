@@ -620,43 +620,43 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
             </div>
             <div className="px-6 overflow-y-auto flex-1">
             
-            <div className="flex items-center space-x-4 mb-6 pt-2">
-              <div className="relative w-20 h-20 rounded-3xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center overflow-visible shadow-lg border border-border/50">
-                <div className="w-16 h-16 rounded-full overflow-hidden">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="relative w-14 h-14 rounded-2xl bg-secondary flex items-center justify-center overflow-visible">
+                <div className="w-12 h-12 rounded-full overflow-hidden">
                   {selectedCrypto.iconUrl ? (
                     <img src={selectedCrypto.iconUrl} alt={selectedCrypto.symbol} className="w-full h-full object-cover" />
                   ) : (
-                    <span className={`text-3xl font-bold ${selectedCrypto.color}`}>{selectedCrypto.icon}</span>
+                    <span className={`text-2xl font-bold ${selectedCrypto.color}`}>{selectedCrypto.icon}</span>
                   )}
                 </div>
                 {selectedCrypto.networkIconUrl && (
-                  <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-card border-[3px] border-card overflow-hidden shadow-xl">
+                  <div className="absolute -bottom-0.5 -right-0.5 w-6 h-6 rounded-full bg-card border-2 border-card overflow-hidden shadow-lg">
                     <img src={selectedCrypto.networkIconUrl} alt={selectedCrypto.network} className="w-full h-full object-cover" />
                   </div>
                 )}
               </div>
               <div>
-                <p className="text-3xl font-bold text-foreground tracking-tight">{selectedCrypto.symbol}</p>
-                <p className="text-sm text-muted-foreground font-medium">{selectedCrypto.name}</p>
+                <p className="text-2xl font-bold text-foreground">{selectedCrypto.symbol}</p>
+                <p className="text-sm text-muted-foreground">{selectedCrypto.name}</p>
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-secondary/60 to-secondary/40 rounded-3xl p-6 mb-6 border border-border/50 shadow-sm">
-              <p className="text-sm text-muted-foreground font-medium mb-2">Баланс</p>
-              <p className="text-4xl font-bold text-foreground mb-3 tracking-tight">${selectedCrypto.usdValue}</p>
-              <p className="text-base text-muted-foreground font-medium">{selectedCrypto.balance} {selectedCrypto.symbol}</p>
+            <div className="bg-secondary/50 rounded-2xl p-4 mb-4">
+              <p className="text-xs text-muted-foreground mb-1">Баланс</p>
+              <p className="text-3xl font-bold text-foreground mb-1">${selectedCrypto.usdValue}</p>
+              <p className="text-sm text-muted-foreground">{selectedCrypto.balance} {selectedCrypto.symbol}</p>
             </div>
 
-            <div className="mb-6 p-5 bg-gradient-to-br from-secondary/40 to-secondary/20 rounded-3xl border border-border/50">
+            <div className="mb-4 p-3 bg-secondary/30 rounded-2xl">
               <PriceChart 
                 symbol={selectedCrypto.symbol} 
                 currentPrice={cryptoPrices[selectedCrypto.symbol]}
               />
             </div>
 
-            <div className="mb-4">
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-sm font-semibold text-muted-foreground">Адрес кошелька</p>
+            <div className="mb-3">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs font-semibold text-muted-foreground">Адрес кошелька</p>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -665,51 +665,39 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
                     toast.success('Адрес скопирован');
                     setTimeout(() => setCopiedAddress(null), 2000);
                   }}
-                  className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary transition-all active:scale-95"
+                  className="flex items-center space-x-1 px-2 py-1 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary transition-all active:scale-95"
                 >
-                  <Icon name={copiedAddress === selectedCrypto.id ? "Check" : "Copy"} size={14} />
-                  <span className="text-xs font-bold">{copiedAddress === selectedCrypto.id ? 'Скопировано' : 'Копировать'}</span>
+                  <Icon name={copiedAddress === selectedCrypto.id ? "Check" : "Copy"} size={12} />
+                  <span className="text-xs font-semibold">{copiedAddress === selectedCrypto.id ? 'Готово' : 'Копировать'}</span>
                 </button>
               </div>
-              <div className="p-4 rounded-2xl bg-secondary/60 border border-border/50">
+              <div className="p-3 rounded-xl bg-secondary/50 border border-border">
                 <p className="text-xs font-mono text-foreground/90 break-all leading-relaxed">{selectedCrypto.address}</p>
               </div>
             </div>
             </div>
 
-            <div className="sticky bottom-0 bg-gradient-to-t from-card via-card to-card/95 backdrop-blur-sm px-6 pt-4 pb-safe pb-6 flex-shrink-0 border-t border-border/50">
-              <div className="space-y-3">
+            <div className="sticky bottom-0 bg-card px-6 pt-3 pb-safe pb-4 flex-shrink-0 border-t border-border">
+              <div className="grid grid-cols-2 gap-3">
                 <Button
                   onClick={() => {
                     setShowSend(true);
                   }}
-                  className="w-full h-14 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-white text-base font-bold rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center justify-center"
+                  className="h-12 bg-primary hover:bg-primary/90 text-white text-sm font-semibold rounded-xl transition-all active:scale-[0.98] flex items-center justify-center"
                 >
-                  <Icon name="Send" size={20} className="mr-2" />
+                  <Icon name="Send" size={18} className="mr-1.5" />
                   Отправить
                 </Button>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <Button
-                    onClick={() => {
-                      setShowQR(true);
-                    }}
-                    className="h-14 bg-secondary hover:bg-secondary/80 text-foreground text-base font-bold rounded-2xl border-2 border-border/50 transition-all active:scale-[0.98] flex items-center justify-center"
-                  >
-                    <Icon name="QrCode" size={20} className="mr-2" />
-                    Получить
-                  </Button>
-
-                  <Button
-                    onClick={() => {
-                      handleReceiveFunds();
-                    }}
-                    className="h-14 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white text-base font-bold rounded-2xl shadow-lg shadow-green-600/20 transition-all active:scale-[0.98] flex items-center justify-center"
-                  >
-                    <Icon name="Plus" size={20} className="mr-2" />
-                    Пополнить
-                  </Button>
-                </div>
+                <Button
+                  onClick={() => {
+                    setShowQR(true);
+                  }}
+                  className="h-12 bg-secondary hover:bg-secondary/80 text-foreground text-sm font-semibold rounded-xl border border-border transition-all active:scale-[0.98] flex items-center justify-center"
+                >
+                  <Icon name="Download" size={18} className="mr-1.5" />
+                  Получить
+                </Button>
               </div>
             </div>
           </div>
