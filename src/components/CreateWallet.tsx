@@ -4,13 +4,26 @@ import Icon from '@/components/ui/icon';
 
 interface CreateWalletProps {
   onNext: () => void;
+  onBack: () => void;
 }
 
-const CreateWallet = ({ onNext }: CreateWalletProps) => {
+const CreateWallet = ({ onNext, onBack }: CreateWalletProps) => {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <Card className="w-full max-w-md p-8 bg-card border-border animate-fade-in">
-        <div className="flex flex-col items-center space-y-6">
+        <div className="flex flex-col space-y-6">
+          <div className="flex items-center justify-between">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onBack}
+              className="hover:bg-muted"
+            >
+              <Icon name="ArrowLeft" size={20} />
+            </Button>
+            <div className="w-10" />
+          </div>
+          <div className="flex flex-col items-center space-y-6">
           <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
             <Icon name="Wallet" size={48} className="text-primary" />
           </div>
@@ -55,6 +68,7 @@ const CreateWallet = ({ onNext }: CreateWalletProps) => {
           >
             Создать новый кошелек
           </Button>
+          </div>
         </div>
       </Card>
     </div>
