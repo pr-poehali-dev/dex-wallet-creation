@@ -52,6 +52,7 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
 
   const loadBalances = () => {
     const balances = getBalances();
+    console.log('loadBalances called, loaded:', balances);
     setCryptoBalances(balances);
   };
 
