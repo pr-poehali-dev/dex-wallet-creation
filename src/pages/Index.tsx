@@ -9,7 +9,6 @@ import CreateUsername from '@/components/CreateUsername';
 import Welcome from '@/components/Welcome';
 import MainWallet from '@/components/MainWallet';
 import { generateWalletAddresses } from '@/utils/addressGenerator';
-import { initTestBalances } from '@/utils/testBalances';
 import { setBalances } from '@/utils/balanceManager';
 import { setTransactions } from '@/utils/transactionManager';
 import { createUser, getUser, getUserBySeedPhrase } from '@/utils/walletApi';
@@ -82,8 +81,6 @@ const Index = () => {
           
           setWalletAddresses(addressesMap);
           
-          initTestBalances();
-          
           setStep('main');
         } catch (error) {
           console.error('Ошибка загрузки данных кошелька:', error);
@@ -127,7 +124,10 @@ const Index = () => {
       const addresses = Object.fromEntries(walletAddresses);
       const userId = await createUser(name, seedPhrase, addresses);
       localStorage.setItem(USER_ID_KEY, userId.toString());
-      initTestBalances();
+      
+      setBalances({});
+      setTransactions([]);
+      
       toast.success('Кошелёк успешно создан и сохранён в базе данных');
     } catch (error) {
       console.error('Ошибка создания пользователя в БД:', error);
