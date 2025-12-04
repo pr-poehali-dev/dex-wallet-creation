@@ -61,8 +61,8 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
     { id: '30', name: 'Toncoin', symbol: 'TON', network: 'TON', balance: '0', usdValue: '0.00', icon: '💎', address: walletAddresses.get('TON') || 'EQDton...', color: 'text-blue-400' },
   ];
 
-  const topCryptos = cryptoList.filter(c => ['USDT', 'BTC', 'ETH'].includes(c.symbol));
-  const totalBalance = cryptoList.reduce((sum, c) => sum + parseFloat(c.usdValue.replace(',', '')), 0);
+  const mainCryptos = cryptoList.filter(c => ['USDT', 'BTC', 'ETH', 'SOL', 'BNB'].includes(c.symbol));
+  const totalBalance = mainCryptos.reduce((sum, c) => sum + parseFloat(c.usdValue.replace(',', '')), 0);
 
   const handleReceive = (crypto: Crypto) => {
     setSelectedCrypto(crypto);
@@ -110,7 +110,7 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
 
         <div className="grid grid-cols-3 gap-3 pt-4">
           <Button
-            onClick={() => topCryptos[0] && handleSend(topCryptos[0])}
+            onClick={() => mainCryptos[0] && handleSend(mainCryptos[0])}
             className="h-auto flex flex-col items-center justify-center space-y-2 py-4 bg-white/10 hover:bg-white/20 text-white rounded-2xl border-none backdrop-blur-sm active:scale-95 transition-all"
           >
             <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
@@ -120,7 +120,7 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
           </Button>
 
           <Button
-            onClick={() => topCryptos[0] && handleReceive(topCryptos[0])}
+            onClick={() => mainCryptos[0] && handleReceive(mainCryptos[0])}
             className="h-auto flex flex-col items-center justify-center space-y-2 py-4 bg-white/10 hover:bg-white/20 text-white rounded-2xl border-none backdrop-blur-sm active:scale-95 transition-all"
           >
             <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
@@ -152,7 +152,7 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
             </div>
 
             <div className="space-y-2">
-              {cryptoList.map((crypto) => (
+              {mainCryptos.map((crypto) => (
                 <Card
                   key={crypto.id}
                   className="p-4 bg-card hover:bg-secondary/30 border-border active:scale-[0.98] transition-all rounded-xl cursor-pointer shadow-sm"
