@@ -9,6 +9,8 @@ import CreateUsername from '@/components/CreateUsername';
 import Welcome from '@/components/Welcome';
 import MainWallet from '@/components/MainWallet';
 import { generateWalletAddresses } from '@/utils/addressGenerator';
+import { initTestBalances } from '@/utils/testBalances';
+import { getBalances } from '@/utils/balanceManager';
 
 const STORAGE_KEY = 'dex_wallet_data';
 
@@ -40,6 +42,12 @@ const Index = () => {
         }
         
         setWalletAddresses(addressesMap);
+        
+        const balances = getBalances();
+        if (Object.keys(balances).length === 0) {
+          initTestBalances();
+        }
+        
         setStep('main');
       } catch (error) {
         console.error('Ошибка загрузки данных кошелька:', error);

@@ -6,8 +6,11 @@ import QRModal from '@/components/QRModal';
 import SendModal from '@/components/SendModal';
 import AddCryptoModal from '@/components/AddCryptoModal';
 import PriceChart from '@/components/PriceChart';
+import TransactionHistory from '@/components/TransactionHistory';
+import TransactionDetailModal from '@/components/TransactionDetailModal';
 import { fetchCryptoPrices, calculateBalance } from '@/utils/cryptoPrices';
-import { getBalances } from '@/utils/balanceManager';
+import { getBalances, updateBalance } from '@/utils/balanceManager';
+import { getTransactions, addTransaction, generateTransactionHash, generateTransactionId, simulateTransactionConfirmation, Transaction } from '@/utils/transactionManager';
 import { toast } from 'sonner';
 
 interface MainWalletProps {
@@ -41,6 +44,19 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
   const [cryptoPrices, setCryptoPrices] = useState<{[key: string]: number}>({});
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
   const [cryptoBalances, setCryptoBalances] = useState<{[key: string]: string}>({});
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [showTransactionDetail, setShowTransactionDetail] = useState(false);
+
+  const loadBalances = () => {
+    const balances = getBalances();
+    setCryptoBalances(balances);
+  };
+
+  const loadTransactions = () => {
+    const txs = getTransactions();
+    setTransactions(txs);
+  };
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY_SELECTED);
@@ -52,8 +68,8 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
       }
     }
 
-    const balances = getBalances();
-    setCryptoBalances(balances);
+    loadBalances();
+    loadTransactions();
   }, []);
 
   useEffect(() => {
@@ -228,6 +244,53 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
     setShowSend(true);
   };
 
+  const handleTransactionComplete = () => {
+    loadBalances();
+    loadTransactions();
+  };
+
+  const handleTransactionClick = (tx: Transaction) => {
+    setSelectedTransaction(tx);
+    setShowTransactionDetail(true);
+  };
+
+  const handleReceiveFunds = () => {
+    if (selectedCrypto) {
+      const receiveAmount = (Math.random() * 10 + 1).toFixed(8).replace(/\.?0+$/, '');
+      const randomAddress = '0x' + Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+      
+      const transactionId = generateTransactionId();
+      const transaction: Transaction = {
+        id: transactionId,
+        type: 'receive',
+        cryptoId: selectedCrypto.id,
+        symbol: selectedCrypto.symbol,
+        amount: receiveAmount,
+        address: randomAddress,
+        fee: '0',
+        status: 'pending',
+        timestamp: Date.now(),
+        hash: generateTransactionHash(),
+        network: selectedCrypto.network
+      };
+
+      addTransaction(transaction);
+
+      const currentBalance = parseFloat(selectedCrypto.balance.replace(',', ''));
+      const newBalance = (currentBalance + parseFloat(receiveAmount)).toFixed(8).replace(/\.?0+$/, '');
+      updateBalance(selectedCrypto.id, newBalance);
+
+      toast.success('Транзакция получена');
+
+      simulateTransactionConfirmation(transactionId, () => {
+        toast.success('Транзакция подтверждена');
+        handleTransactionComplete();
+      });
+
+      handleTransactionComplete();
+    }
+  };
+
   const handleLogout = () => {
     const STORAGE_KEY = 'dex_wallet_data';
     localStorage.removeItem(STORAGE_KEY);
@@ -357,6 +420,15 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
                 </Card>
               ))}
             </div>
+
+            <div className="flex items-center justify-between px-1 pt-4">
+              <h3 className="text-lg font-bold text-foreground">История транзакций</h3>
+            </div>
+
+            <TransactionHistory
+              transactions={transactions}
+              onTransactionClick={handleTransactionClick}
+            />
           </>
         )}
 
@@ -516,6 +588,18 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
           onClose={() => {
             setShowSend(false);
           }}
+          onTransactionComplete={handleTransactionComplete}
+        />
+      )}
+
+      {showTransactionDetail && selectedTransaction && (
+        <TransactionDetailModal
+          open={showTransactionDetail}
+          transaction={selectedTransaction}
+          onClose={() => {
+            setShowTransactionDetail(false);
+            setSelectedTransaction(null);
+          }}
         />
       )}
 
@@ -592,7 +676,7 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               <Button
                 onClick={() => {
                   setShowSend(true);
@@ -611,6 +695,16 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
               >
                 <Icon name="Download" size={20} className="mr-2" />
                 Получить
+              </Button>
+
+              <Button
+                onClick={() => {
+                  handleReceiveFunds();
+                }}
+                className="h-14 bg-green-600 hover:bg-green-700 text-white text-base font-semibold rounded-xl"
+              >
+                <Icon name="Plus" size={20} className="mr-2" />
+                Пополнить
               </Button>
             </div>
             </div>

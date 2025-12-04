@@ -3,8 +3,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
 import { toast } from 'sonner';
+import { addTransaction, generateTransactionHash, generateTransactionId, simulateTransactionConfirmation } from '@/utils/transactionManager';
+import { updateBalance, getBalances } from '@/utils/balanceManager';
 
 interface Crypto {
+  id: string;
   name: string;
   symbol: string;
   network: string;
@@ -19,12 +22,14 @@ interface SendModalProps {
   open: boolean;
   onClose: () => void;
   crypto: Crypto;
+  onTransactionComplete?: () => void;
 }
 
-const SendModal = ({ open, onClose, crypto }: SendModalProps) => {
+const SendModal = ({ open, onClose, crypto, onTransactionComplete }: SendModalProps) => {
   const [address, setAddress] = useState('');
   const [amount, setAmount] = useState('');
   const [showScanner, setShowScanner] = useState(false);
+  const [isSending, setIsSending] = useState(false);
 
   if (!open) return null;
 
@@ -33,7 +38,48 @@ const SendModal = ({ open, onClose, crypto }: SendModalProps) => {
       toast.error('Заполните все поля');
       return;
     }
-    toast.success('Транзакция успешно отправлена');
+
+    const sendAmount = parseFloat(amount);
+    const fee = 0.001;
+    const currentBalance = parseFloat(crypto.balance.replace(',', ''));
+
+    if (sendAmount + fee > currentBalance) {
+      toast.error('Недостаточно средств для отправки');
+      return;
+    }
+
+    setIsSending(true);
+
+    const transactionId = generateTransactionId();
+    const transaction = {
+      id: transactionId,
+      type: 'send' as const,
+      cryptoId: crypto.id,
+      symbol: crypto.symbol,
+      amount: sendAmount.toFixed(8).replace(/\.?0+$/, ''),
+      address: address,
+      fee: fee.toString(),
+      status: 'pending' as const,
+      timestamp: Date.now(),
+      hash: generateTransactionHash(),
+      network: crypto.network
+    };
+
+    addTransaction(transaction);
+
+    const newBalance = (currentBalance - sendAmount - fee).toFixed(8).replace(/\.?0+$/, '');
+    updateBalance(crypto.id, newBalance);
+
+    toast.success('Транзакция отправлена в сеть');
+
+    simulateTransactionConfirmation(transactionId, () => {
+      toast.success('Транзакция подтверждена');
+      if (onTransactionComplete) {
+        onTransactionComplete();
+      }
+    });
+
+    setIsSending(false);
     onClose();
     setAddress('');
     setAmount('');
@@ -189,11 +235,20 @@ const SendModal = ({ open, onClose, crypto }: SendModalProps) => {
             </Button>
             <Button
               onClick={handleSend}
-              disabled={!address || !amount || parseFloat(amount) <= 0}
+              disabled={!address || !amount || parseFloat(amount) <= 0 || isSending}
               className="h-14 bg-primary hover:bg-primary/90 text-white text-base font-semibold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Icon name="Send" size={18} className="mr-2" />
-              Отправить
+              {isSending ? (
+                <>
+                  <Icon name="Loader2" size={18} className="mr-2 animate-spin" />
+                  Отправка...
+                </>
+              ) : (
+                <>
+                  <Icon name="Send" size={18} className="mr-2" />
+                  Отправить
+                </>
+              )}
             </Button>
           </div>
         </div>
