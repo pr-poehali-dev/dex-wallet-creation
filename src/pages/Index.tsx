@@ -12,7 +12,7 @@ import { generateWalletAddresses } from '@/utils/addressGenerator';
 import { initTestBalances } from '@/utils/testBalances';
 import { setBalances } from '@/utils/balanceManager';
 import { setTransactions } from '@/utils/transactionManager';
-import { createUser, getUser } from '@/utils/walletApi';
+import { createUser, getUser, getUserBySeedPhrase } from '@/utils/walletApi';
 import { toast } from 'sonner';
 
 const STORAGE_KEY = 'dex_wallet_data';
@@ -151,38 +151,29 @@ const Index = () => {
     const addresses = generateWalletAddresses(mnemonic);
     setWalletAddresses(addresses);
     
-    const savedData = localStorage.getItem(STORAGE_KEY);
-    if (savedData) {
-      try {
-        const data = JSON.parse(savedData);
-        const savedSeedPhrase = data.seedPhrase?.join(' ');
-        const currentSeedPhrase = mnemonic.join(' ');
+    try {
+      const userData = await getUserBySeedPhrase(mnemonic);
+      
+      if (userData) {
+        setUsername(userData.username);
         
-        if (savedSeedPhrase === currentSeedPhrase) {
-          const savedUsername = data.username || '';
-          setUsername(savedUsername);
-          saveWalletData(mnemonic, savedUsername, addresses);
-          
-          try {
-            const userData = await getUser(savedUsername);
-            if (userData) {
-              setBalances(userData.balances);
-              localStorage.setItem(USER_ID_KEY, userData.user_id.toString());
-              toast.success('Кошелёк успешно восстановлен из базы данных');
-            }
-          } catch (error) {
-            console.error('Ошибка загрузки данных из БД:', error);
-            initTestBalances();
-          }
-          
-          setStep('main');
-          return;
-        }
-      } catch (error) {
-        console.error('Ошибка проверки существующего кошелька:', error);
+        const addressesMap = new Map(Object.entries(userData.addresses));
+        setWalletAddresses(addressesMap);
+        
+        setBalances(userData.balances);
+        localStorage.setItem(USER_ID_KEY, userData.user_id.toString());
+        
+        saveWalletData(mnemonic, userData.username, addressesMap);
+        
+        toast.success(`Добро пожаловать, ${userData.username}! Кошелёк восстановлен`);
+        setStep('main');
+        return;
       }
+    } catch (error) {
+      console.error('Ошибка поиска кошелька по сид-фразе:', error);
     }
     
+    toast.info('Новый кошелёк. Создайте никнейм');
     setStep('username');
   };
 

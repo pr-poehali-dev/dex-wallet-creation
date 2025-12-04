@@ -64,11 +64,19 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             elif action == 'get_user':
                 username = body.get('username')
+                seed_phrase_encrypted = body.get('seed_phrase_encrypted')
                 
-                cur.execute(
-                    "SELECT id, username, seed_phrase_encrypted, created_at FROM users WHERE username = %s",
-                    (username,)
-                )
+                if seed_phrase_encrypted:
+                    cur.execute(
+                        "SELECT id, username, seed_phrase_encrypted, created_at FROM users WHERE seed_phrase_encrypted = %s",
+                        (seed_phrase_encrypted,)
+                    )
+                else:
+                    cur.execute(
+                        "SELECT id, username, seed_phrase_encrypted, created_at FROM users WHERE username = %s",
+                        (username,)
+                    )
+                
                 user_row = cur.fetchone()
                 
                 if not user_row:

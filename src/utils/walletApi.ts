@@ -89,6 +89,34 @@ export async function getUser(username: string): Promise<GetUserResponse | null>
   return data;
 }
 
+export async function getUserBySeedPhrase(seedPhrase: string[]): Promise<GetUserResponse | null> {
+  const seedPhraseEncrypted = simpleEncrypt(seedPhrase.join(' '));
+  
+  const response = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      action: 'get_user',
+      seed_phrase_encrypted: seedPhraseEncrypted,
+    }),
+  });
+
+  if (response.status === 404) {
+    return null;
+  }
+
+  if (!response.ok) {
+    throw new Error('Failed to get user by seed phrase');
+  }
+
+  const data: GetUserResponse = await response.json();
+  data.seed_phrase_encrypted = simpleDecrypt(data.seed_phrase_encrypted);
+  
+  return data;
+}
+
 export async function updateBalance(
   userId: number,
   cryptoId: string,
