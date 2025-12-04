@@ -47,21 +47,21 @@ const SendModal = ({ open, onClose, crypto }: SendModalProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="bg-card border-border max-w-sm">
+      <DialogContent className="bg-card border-border max-w-[90vw] sm:max-w-sm mx-4">
         <DialogHeader>
-          <DialogTitle className="flex items-center space-x-3">
-            <div className={`w-10 h-10 rounded-full bg-muted flex items-center justify-center text-xl ${crypto.color}`}>
+          <DialogTitle className="flex items-center space-x-2">
+            <div className={`w-9 h-9 rounded-full bg-muted flex items-center justify-center text-lg ${crypto.color}`}>
               {crypto.icon}
             </div>
             <div>
-              <p className="text-lg font-bold text-foreground">Отправить {crypto.symbol}</p>
+              <p className="text-base font-bold text-foreground">Отправить {crypto.symbol}</p>
               <p className="text-xs text-muted-foreground font-normal">{crypto.network}</p>
             </div>
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
-          <div className="p-3 rounded-lg bg-primary/10">
+        <div className="space-y-3 py-3">
+          <div className="p-2.5 rounded-lg bg-primary/10">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Доступно:</span>
               <span className="text-sm font-semibold text-foreground">
@@ -70,32 +70,33 @@ const SendModal = ({ open, onClose, crypto }: SendModalProps) => {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Адрес получателя</label>
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-foreground">Адрес получателя</label>
             <div className="flex space-x-2">
               <Input
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="0x..."
-                className="flex-1 bg-muted/30 border-border"
+                className="flex-1 h-10 text-sm bg-muted/30 border-border"
               />
               <Button
                 variant="outline"
                 size="icon"
+                className="h-10 w-10"
                 onClick={handleScan}
                 disabled={showScanner}
               >
-                <Icon name={showScanner ? "Loader2" : "QrCode"} size={18} className={showScanner ? "animate-spin" : ""} />
+                <Icon name={showScanner ? "Loader2" : "QrCode"} size={16} className={showScanner ? "animate-spin" : ""} />
               </Button>
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-foreground">Сумма</label>
+              <label className="text-xs font-medium text-foreground">Сумма</label>
               <button
                 onClick={() => setAmount(crypto.balance.replace(',', ''))}
-                className="text-xs text-primary hover:underline"
+                className="text-[11px] text-primary hover:underline"
               >
                 Максимум
               </button>
@@ -106,20 +107,20 @@ const SendModal = ({ open, onClose, crypto }: SendModalProps) => {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0.00"
-                className="bg-muted/30 border-border pr-16"
+                className="h-10 text-sm bg-muted/30 border-border pr-16"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-medium">
                 {crypto.symbol}
               </span>
             </div>
           </div>
 
-          <div className="p-3 rounded-lg bg-muted/20 space-y-2">
-            <div className="flex items-center justify-between text-sm">
+          <div className="p-2.5 rounded-lg bg-muted/20 space-y-1.5">
+            <div className="flex items-center justify-between text-xs">
               <span className="text-muted-foreground">Комиссия сети:</span>
               <span className="text-foreground">~0.001 {crypto.symbol}</span>
             </div>
-            <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center justify-between text-xs">
               <span className="text-muted-foreground">Общая сумма:</span>
               <span className="text-foreground font-semibold">
                 {amount ? (parseFloat(amount) + 0.001).toFixed(3) : '0.000'} {crypto.symbol}
@@ -127,29 +128,29 @@ const SendModal = ({ open, onClose, crypto }: SendModalProps) => {
             </div>
           </div>
 
-          <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-            <div className="flex items-start space-x-2">
-              <Icon name="AlertTriangle" size={16} className="text-destructive mt-0.5" />
-              <p className="text-xs text-destructive">
+          <div className="p-2.5 rounded-lg bg-destructive/10 border border-destructive/20">
+            <div className="flex items-start space-x-1.5">
+              <Icon name="AlertTriangle" size={14} className="text-destructive mt-0.5" />
+              <p className="text-[11px] text-destructive leading-snug">
                 Проверьте адрес перед отправкой. Транзакции необратимы.
               </p>
             </div>
           </div>
 
-          <div className="flex space-x-3">
+          <div className="flex space-x-2">
             <Button
               variant="outline"
               onClick={onClose}
-              className="flex-1"
+              className="flex-1 h-10"
             >
               Отмена
             </Button>
             <Button
               onClick={handleSend}
               disabled={!address || !amount}
-              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
+              className="flex-1 h-10 bg-primary hover:bg-primary/90 text-primary-foreground"
             >
-              <Icon name="Send" size={18} className="mr-2" />
+              <Icon name="Send" size={16} className="mr-1" />
               Отправить
             </Button>
           </div>

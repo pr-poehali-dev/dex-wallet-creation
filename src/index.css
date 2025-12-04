@@ -55,5 +55,28 @@
   body {
     @apply bg-background text-foreground;
     font-family: "Rubik", sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    overflow-x: hidden;
+  }
+
+  html {
+    overflow-x: hidden;
+  }
+
+  input,
+  textarea,
+  button,
+  select {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  @supports (-webkit-touch-callout: none) {
+    body {
+      min-height: -webkit-fill-available;
+    }
   }
 }
