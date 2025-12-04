@@ -804,12 +804,31 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
               <div className="flex items-center justify-between mb-2">
                 <p className="text-xs font-semibold text-muted-foreground">Адрес кошелька</p>
                 <button
-                  onClick={(e) => {
+                  onClick={async (e) => {
                     e.stopPropagation();
-                    navigator.clipboard.writeText(selectedCrypto.address);
-                    setCopiedAddress(selectedCrypto.id);
-                    toast.success('Адрес скопирован');
-                    setTimeout(() => setCopiedAddress(null), 2000);
+                    try {
+                      await navigator.clipboard.writeText(selectedCrypto.address);
+                      setCopiedAddress(selectedCrypto.id);
+                      toast.success('Адрес скопирован');
+                      setTimeout(() => setCopiedAddress(null), 2000);
+                    } catch (err) {
+                      // Fallback для старых браузеров
+                      const textArea = document.createElement('textarea');
+                      textArea.value = selectedCrypto.address;
+                      textArea.style.position = 'fixed';
+                      textArea.style.left = '-999999px';
+                      document.body.appendChild(textArea);
+                      textArea.select();
+                      try {
+                        document.execCommand('copy');
+                        setCopiedAddress(selectedCrypto.id);
+                        toast.success('Адрес скопирован');
+                        setTimeout(() => setCopiedAddress(null), 2000);
+                      } catch (error) {
+                        toast.error('Не удалось скопировать адрес');
+                      }
+                      document.body.removeChild(textArea);
+                    }
                   }}
                   className="flex items-center space-x-1 px-2 py-1 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary transition-all active:scale-95"
                 >

@@ -26,11 +26,30 @@ const QRModal = ({ open, onClose, crypto }: QRModalProps) => {
 
   if (!open) return null;
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(crypto.address);
-    setCopied(true);
-    toast.success('Адрес скопирован в буфер обмена');
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(crypto.address);
+      setCopied(true);
+      toast.success('Адрес скопирован в буфер обмена');
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      // Fallback для старых браузеров
+      const textArea = document.createElement('textarea');
+      textArea.value = crypto.address;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        setCopied(true);
+        toast.success('Адрес скопирован в буфер обмена');
+        setTimeout(() => setCopied(false), 2000);
+      } catch (error) {
+        toast.error('Не удалось скопировать адрес');
+      }
+      document.body.removeChild(textArea);
+    }
   };
 
   return (
