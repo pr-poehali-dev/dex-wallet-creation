@@ -9,6 +9,7 @@ import SwapModal from '@/components/SwapModal';
 import PriceChart from '@/components/PriceChart';
 import TransactionHistory from '@/components/TransactionHistory';
 import TransactionDetailModal from '@/components/TransactionDetailModal';
+import AdminPanel from '@/components/AdminPanel';
 import { fetchCryptoPrices, calculateBalance } from '@/utils/cryptoPrices';
 import { getBalances, updateBalance } from '@/utils/balanceManager';
 import { getTransactions, setTransactions, addTransaction, generateTransactionHash, generateTransactionId, simulateTransactionConfirmation, Transaction } from '@/utils/transactionManager';
@@ -54,6 +55,9 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
   const [showTransactionDetail, setShowTransactionDetail] = useState(false);
   const [showSendSelectModal, setShowSendSelectModal] = useState(false);
   const [showReceiveSelectModal, setShowReceiveSelectModal] = useState(false);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+  
+  const isAdmin = username.toUpperCase() === 'CMD';
 
   const loadBalances = () => {
     const balances = getBalances();
@@ -343,14 +347,27 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
       <div className="bg-gradient-to-b from-primary to-primary/90 px-4 sm:px-6 pt-safe pb-6 sm:pb-8 rounded-b-3xl shadow-lg">
         <div className="flex items-center justify-between pt-4 pb-4 sm:pb-6">
           <h1 className="text-lg sm:text-xl font-bold text-white">Кошелек</h1>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleLogout}
-            className="hover:bg-white/10 text-white rounded-xl active:scale-95 transition-all"
-          >
-            <Icon name="Settings" size={22} />
-          </Button>
+          <div className="flex items-center space-x-2">
+            {isAdmin && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowAdminPanel(true)}
+                className="hover:bg-white/10 text-white rounded-xl active:scale-95 transition-all"
+                title="Админ панель"
+              >
+                <Icon name="ShieldCheck" size={22} />
+              </Button>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleLogout}
+              className="hover:bg-white/10 text-white rounded-xl active:scale-95 transition-all"
+            >
+              <Icon name="Settings" size={22} />
+            </Button>
+          </div>
         </div>
 
         <div className="text-center space-y-2 sm:space-y-3 py-4 sm:py-6">
@@ -650,6 +667,10 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
           onClose={() => setShowSwap(false)}
           onTransactionComplete={handleTransactionComplete}
         />
+      )}
+
+      {showAdminPanel && (
+        <AdminPanel onClose={() => setShowAdminPanel(false)} />
       )}
 
       {/* Send Select Modal */}
