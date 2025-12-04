@@ -188,11 +188,15 @@ export const generateWalletAddresses = (seedPhrase: string[]): Map<string, strin
       hash = ((hash << 5) - hash) + seedWithSalt.charCodeAt(i);
       hash = hash & hash;
     }
+    
+    // Создаём детерминированный генератор
+    let currentHash = Math.abs(hash);
     const originalRandom = Math.random;
     Math.random = () => {
-      hash = (hash * 9301 + 49297) % 233280;
-      return hash / 233280;
+      currentHash = (currentHash * 1103515245 + 12345) & 0x7fffffff;
+      return currentHash / 0x7fffffff;
     };
+    
     const generatedAddress = generateAddress(network);
     Math.random = originalRandom;
     
