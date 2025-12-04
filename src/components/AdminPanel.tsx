@@ -89,6 +89,16 @@ const AdminPanel = ({ onClose }: AdminPanelProps) => {
 
       await updateBalanceApi(searchResults.user_id, selectedCrypto, newBalance);
 
+      window.dispatchEvent(new CustomEvent('balanceUpdated', {
+        detail: {
+          userId: searchResults.user_id,
+          cryptoId: selectedCrypto,
+          newBalance,
+          amount: parseFloat(amount),
+          symbol: crypto.symbol
+        }
+      }));
+
       toast.success(`Пополнено ${amount} ${crypto.symbol} для ${targetUsername}`);
       
       setAmount('');

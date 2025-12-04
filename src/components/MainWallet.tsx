@@ -56,6 +56,7 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
   const [showSendSelectModal, setShowSendSelectModal] = useState(false);
   const [showReceiveSelectModal, setShowReceiveSelectModal] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [animatingCryptoId, setAnimatingCryptoId] = useState<string | null>(null);
   
   const isAdmin = username.toUpperCase() === 'CMD';
 
@@ -97,6 +98,24 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
 
     loadBalances();
     loadTransactions();
+
+    const handleBalanceUpdate = (event: any) => {
+      const userIdStr = localStorage.getItem(USER_ID_KEY);
+      if (userIdStr && parseInt(userIdStr) === event.detail.userId) {
+        setAnimatingCryptoId(event.detail.cryptoId);
+        loadBalances();
+        
+        toast.success(`+${event.detail.amount} ${event.detail.symbol}`, {
+          duration: 3000,
+          icon: '💰',
+        });
+        
+        setTimeout(() => setAnimatingCryptoId(null), 2000);
+      }
+    };
+
+    window.addEventListener('balanceUpdated', handleBalanceUpdate);
+    return () => window.removeEventListener('balanceUpdated', handleBalanceUpdate);
   }, []);
 
   useEffect(() => {
@@ -436,7 +455,9 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
               {mainCryptos.map((crypto) => (
                 <Card
                   key={crypto.id}
-                  className="p-3 sm:p-4 bg-card hover:bg-secondary/30 border-border active:scale-[0.98] transition-all rounded-xl cursor-pointer shadow-sm"
+                  className={`p-3 sm:p-4 bg-card hover:bg-secondary/30 border-border active:scale-[0.98] transition-all rounded-xl cursor-pointer shadow-sm ${
+                    animatingCryptoId === crypto.id ? 'animate-balance-update ring-2 ring-primary' : ''
+                  }`}
                   onClick={() => setSelectedCrypto(crypto)}
                 >
                   <div className="flex items-center justify-between gap-3">

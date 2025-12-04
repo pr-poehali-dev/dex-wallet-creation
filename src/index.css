@@ -200,4 +200,31 @@
       opacity: 0;
     }
   }
+
+  .animate-balance-update {
+    animation: balanceUpdate 1.5s ease-in-out;
+  }
+
+  @keyframes balanceUpdate {
+    0% {
+      transform: scale(1);
+      background-color: hsl(var(--card));
+    }
+    25% {
+      transform: scale(1.05);
+      background-color: hsl(var(--primary) / 0.15);
+    }
+    50% {
+      transform: scale(1.02);
+      background-color: hsl(var(--primary) / 0.1);
+    }
+    75% {
+      transform: scale(1.01);
+      background-color: hsl(var(--primary) / 0.05);
+    }
+    100% {
+      transform: scale(1);
+      background-color: hsl(var(--card));
+    }
+  }
 }
