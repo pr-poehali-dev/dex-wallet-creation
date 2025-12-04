@@ -618,7 +618,7 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
             <div className="sticky top-0 bg-card z-10 pt-4 pb-3 px-6 flex-shrink-0 rounded-t-[32px]">
               <div className="w-16 h-1.5 bg-muted-foreground/30 rounded-full mx-auto"></div>
             </div>
-            <div className="px-6 pb-8 overflow-y-auto flex-1">
+            <div className="px-6 overflow-y-auto flex-1">
             
             <div className="flex items-center space-x-4 mb-6 pt-2">
               <div className="relative w-20 h-20 rounded-3xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center overflow-visible shadow-lg border border-border/50">
@@ -654,7 +654,7 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
               />
             </div>
 
-            <div className="mb-6">
+            <div className="mb-4">
               <div className="flex items-center justify-between mb-3">
                 <p className="text-sm font-semibold text-muted-foreground">Адрес кошелька</p>
                 <button
@@ -675,40 +675,42 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
                 <p className="text-xs font-mono text-foreground/90 break-all leading-relaxed">{selectedCrypto.address}</p>
               </div>
             </div>
-
-            <div className="space-y-3">
-              <Button
-                onClick={() => {
-                  setShowSend(true);
-                }}
-                className="w-full h-16 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-white text-base font-bold rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center justify-center"
-              >
-                <Icon name="Send" size={22} className="mr-2.5" />
-                Отправить
-              </Button>
-
-              <div className="grid grid-cols-2 gap-3">
-                <Button
-                  onClick={() => {
-                    setShowQR(true);
-                  }}
-                  className="h-16 bg-secondary hover:bg-secondary/80 text-foreground text-base font-bold rounded-2xl border-2 border-border/50 transition-all active:scale-[0.98] flex items-center justify-center"
-                >
-                  <Icon name="QrCode" size={22} className="mr-2" />
-                  Получить
-                </Button>
-
-                <Button
-                  onClick={() => {
-                    handleReceiveFunds();
-                  }}
-                  className="h-16 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white text-base font-bold rounded-2xl shadow-lg shadow-green-600/20 transition-all active:scale-[0.98] flex items-center justify-center"
-                >
-                  <Icon name="Plus" size={22} className="mr-2" />
-                  Пополнить
-                </Button>
-              </div>
             </div>
+
+            <div className="sticky bottom-0 bg-gradient-to-t from-card via-card to-card/95 backdrop-blur-sm px-6 pt-4 pb-safe pb-6 flex-shrink-0 border-t border-border/50">
+              <div className="space-y-3">
+                <Button
+                  onClick={() => {
+                    setShowSend(true);
+                  }}
+                  className="w-full h-14 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-white text-base font-bold rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center justify-center"
+                >
+                  <Icon name="Send" size={20} className="mr-2" />
+                  Отправить
+                </Button>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <Button
+                    onClick={() => {
+                      setShowQR(true);
+                    }}
+                    className="h-14 bg-secondary hover:bg-secondary/80 text-foreground text-base font-bold rounded-2xl border-2 border-border/50 transition-all active:scale-[0.98] flex items-center justify-center"
+                  >
+                    <Icon name="QrCode" size={20} className="mr-2" />
+                    Получить
+                  </Button>
+
+                  <Button
+                    onClick={() => {
+                      handleReceiveFunds();
+                    }}
+                    className="h-14 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white text-base font-bold rounded-2xl shadow-lg shadow-green-600/20 transition-all active:scale-[0.98] flex items-center justify-center"
+                  >
+                    <Icon name="Plus" size={20} className="mr-2" />
+                    Пополнить
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
