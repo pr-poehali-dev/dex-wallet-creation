@@ -18,6 +18,7 @@ interface Crypto {
   balance: string;
   usdValue: string;
   icon: string;
+  iconUrl?: string;
   address: string;
   color: string;
 }
@@ -29,7 +30,7 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
   const [showSend, setShowSend] = useState(false);
 
   const cryptoList: Crypto[] = [
-    { id: '1', name: 'Tether', symbol: 'USDT', network: 'TRC20', balance: '0.00', usdValue: '0.00', icon: '₮', address: walletAddresses.get('TRC20') || 'TXYZabcd1234...', color: 'text-green-600' },
+    { id: '1', name: 'Tether', symbol: 'USDT', network: 'TRC20', balance: '0.00', usdValue: '0.00', icon: '₮', iconUrl: 'https://cdn.poehali.dev/files/64ba7feb-f8b0-4f82-8ed8-a8b33c26c00d.png', address: walletAddresses.get('TRC20') || 'TXYZabcd1234...', color: 'text-green-600' },
     { id: '2', name: 'Bitcoin', symbol: 'BTC', network: 'Bitcoin', balance: '0.00000000', usdValue: '0.00', icon: '₿', address: walletAddresses.get('Bitcoin') || 'bc1qxy2k...', color: 'text-orange-500' },
     { id: '3', name: 'Ethereum', symbol: 'ETH', network: 'Ethereum', balance: '0.0000', usdValue: '0.00', icon: 'Ξ', address: walletAddresses.get('Ethereum') || '0x742d35...', color: 'text-blue-600' },
     { id: '4', name: 'BNB', symbol: 'BNB', network: 'BSC', balance: '0.00', usdValue: '0.00', icon: '🔶', address: walletAddresses.get('BSC') || '0xbnb123...', color: 'text-yellow-600' },
@@ -160,8 +161,12 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center">
-                        <span className={`text-2xl font-bold ${crypto.color}`}>{crypto.icon}</span>
+                      <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
+                        {crypto.iconUrl ? (
+                          <img src={crypto.iconUrl} alt={crypto.symbol} className="w-full h-full object-cover" />
+                        ) : (
+                          <span className={`text-2xl font-bold ${crypto.color}`}>{crypto.icon}</span>
+                        )}
                       </div>
                       <div>
                         <p className="text-base font-bold text-foreground">{crypto.symbol}</p>
@@ -344,8 +349,12 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
             <div className="w-12 h-1 bg-border rounded-full mx-auto mb-6"></div>
             
             <div className="flex items-center space-x-4 mb-6">
-              <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center">
-                <span className={`text-3xl font-bold ${selectedCrypto.color}`}>{selectedCrypto.icon}</span>
+              <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
+                {selectedCrypto.iconUrl ? (
+                  <img src={selectedCrypto.iconUrl} alt={selectedCrypto.symbol} className="w-full h-full object-cover" />
+                ) : (
+                  <span className={`text-3xl font-bold ${selectedCrypto.color}`}>{selectedCrypto.icon}</span>
+                )}
               </div>
               <div>
                 <p className="text-2xl font-bold text-foreground">{selectedCrypto.symbol}</p>
