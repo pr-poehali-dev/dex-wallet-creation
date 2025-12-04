@@ -363,7 +363,8 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
 
   return (
     <div className="min-h-screen bg-background pb-24 overflow-x-hidden">
-      <div className="bg-gradient-to-b from-primary to-primary/90 px-4 sm:px-6 pt-safe pb-6 sm:pb-8 rounded-b-3xl shadow-lg">
+      <div className="fixed top-0 left-0 right-0 h-screen bg-primary pointer-events-none z-0" style={{ height: 'max(50vh, 400px)' }}></div>
+      <div className="bg-gradient-to-b from-primary to-primary/90 px-4 sm:px-6 pt-safe pb-6 sm:pb-8 rounded-b-3xl shadow-lg relative z-10">
         <div className="flex items-center justify-between pt-4 pb-4 sm:pb-6">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg border-2 border-white/30">
@@ -442,7 +443,7 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
         </div>
       </div>
 
-      <div className="px-4 sm:px-6 pt-5 sm:pt-6 space-y-4">
+      <div className="px-4 sm:px-6 pt-5 sm:pt-6 space-y-4 relative z-10">
         {activeTab === 'home' && (
           <>
             <div className="flex items-center justify-between px-1">
