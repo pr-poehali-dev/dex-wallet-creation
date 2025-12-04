@@ -98,11 +98,15 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
     const tronAddress = walletAddresses.get('Tron') || walletAddresses.get('TRC20') || '';
     const bitcoinAddress = walletAddresses.get('Bitcoin') || '';
     
-    // Debug: проверяем доступные ключи
+    // Debug: проверяем что реально в Map
     if (walletAddresses.size > 0) {
-      console.log('Available wallet addresses:', Array.from(walletAddresses.keys()));
-      console.log('Tron address:', tronAddress);
-      console.log('Bitcoin address:', bitcoinAddress);
+      console.log('walletAddresses Map size:', walletAddresses.size);
+      console.log('All entries:', Array.from(walletAddresses.entries()));
+      console.log('Tron raw:', walletAddresses.get('Tron'));
+      console.log('TRC20 raw:', walletAddresses.get('TRC20'));
+      console.log('Bitcoin raw:', walletAddresses.get('Bitcoin'));
+      console.log('Tron address length:', tronAddress.length);
+      console.log('Bitcoin address length:', bitcoinAddress.length);
     }
     
     return [
