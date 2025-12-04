@@ -614,11 +614,11 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
 
       {selectedCrypto && !showQR && !showSend && !showAddModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 animate-fade-in" onClick={() => setSelectedCrypto(null)}>
-          <div className="absolute bottom-0 left-0 right-0 bg-card rounded-t-3xl pb-safe animate-slide-up max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="sticky top-0 bg-card z-10 pt-3 pb-4 px-6">
+          <div className="absolute bottom-0 left-0 right-0 bg-card rounded-t-3xl animate-slide-up max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="sticky top-0 bg-card z-10 pt-3 pb-4 px-6 flex-shrink-0">
               <div className="w-12 h-1 bg-border rounded-full mx-auto"></div>
             </div>
-            <div className="px-6">
+            <div className="px-6 pb-6 overflow-y-auto flex-1">
             
             <div className="flex items-center space-x-4 mb-6">
               <div className="relative w-16 h-16 rounded-full bg-secondary flex items-center justify-center overflow-visible">

@@ -8,7 +8,7 @@ export const generateAddress = (network: string): string => {
 
   switch (network) {
     case 'Bitcoin':
-      return 'bc1q' + random(39, alphanumeric);
+      return 'bc1q' + random(38, alphanumeric).toLowerCase();
     
     case 'Bitcoin Cash':
       return 'bitcoincash:q' + random(40, alphanumeric);
@@ -29,7 +29,8 @@ export const generateAddress = (network: string): string => {
     
     case 'TRC20':
     case 'Tron':
-      return 'T' + random(33, alphanumeric);
+      const base58Chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+      return 'T' + random(33, base58Chars);
     
     case 'Solana':
       return random(44, alphanumeric);
