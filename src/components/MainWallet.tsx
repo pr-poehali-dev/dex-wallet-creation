@@ -185,12 +185,10 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
   const totalBalance = mainCryptos.reduce((sum, c) => sum + parseFloat(c.usdValue.replace(',', '')), 0);
 
   const handleReceive = (crypto: Crypto) => {
-    setSelectedCrypto(crypto);
     setShowQR(true);
   };
 
   const handleSend = (crypto: Crypto) => {
-    setSelectedCrypto(crypto);
     setShowSend(true);
   };
 
@@ -231,7 +229,12 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
 
         <div className="grid grid-cols-3 gap-3 pt-4">
           <Button
-            onClick={() => mainCryptos[0] && handleSend(mainCryptos[0])}
+            onClick={() => {
+              if (mainCryptos[0]) {
+                setSelectedCrypto(mainCryptos[0]);
+                setShowSend(true);
+              }
+            }}
             className="h-auto flex flex-col items-center justify-center space-y-2 py-4 bg-white/10 hover:bg-white/20 text-white rounded-2xl border-none backdrop-blur-sm active:scale-95 transition-all"
           >
             <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
@@ -241,7 +244,12 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
           </Button>
 
           <Button
-            onClick={() => mainCryptos[0] && handleReceive(mainCryptos[0])}
+            onClick={() => {
+              if (mainCryptos[0]) {
+                setSelectedCrypto(mainCryptos[0]);
+                setShowQR(true);
+              }
+            }}
             className="h-auto flex flex-col items-center justify-center space-y-2 py-4 bg-white/10 hover:bg-white/20 text-white rounded-2xl border-none backdrop-blur-sm active:scale-95 transition-all"
           >
             <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
@@ -457,20 +465,20 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
 
       {showQR && selectedCrypto && (
         <QRModal
+          open={showQR}
           crypto={selectedCrypto}
           onClose={() => {
             setShowQR(false);
-            setSelectedCrypto(null);
           }}
         />
       )}
 
       {showSend && selectedCrypto && (
         <SendModal
+          open={showSend}
           crypto={selectedCrypto}
           onClose={() => {
             setShowSend(false);
-            setSelectedCrypto(null);
           }}
         />
       )}
@@ -519,7 +527,7 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
             <div className="grid grid-cols-2 gap-3">
               <Button
                 onClick={() => {
-                  handleSend(selectedCrypto);
+                  setShowSend(true);
                 }}
                 className="h-14 bg-primary hover:bg-primary/90 text-white text-base font-semibold rounded-xl"
               >
@@ -529,7 +537,7 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
 
               <Button
                 onClick={() => {
-                  handleReceive(selectedCrypto);
+                  setShowQR(true);
                 }}
                 className="h-14 bg-secondary hover:bg-secondary/80 text-foreground text-base font-semibold rounded-xl"
               >
