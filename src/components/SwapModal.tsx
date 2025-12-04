@@ -95,7 +95,9 @@ const SwapModal = ({ open, onClose, allCryptos, onTransactionComplete }: SwapMod
 
   const handleSwap = () => {
     console.log('=== SWAP STARTED ===');
-    console.log('From:', fromCrypto?.symbol, 'To:', toCrypto?.symbol, 'Amount:', fromAmount);
+    console.log('From:', fromCrypto?.symbol, fromCrypto?.name, 'Balance:', fromCrypto?.balance);
+    console.log('To:', toCrypto?.symbol, toCrypto?.name, 'Balance:', toCrypto?.balance);
+    console.log('Amount:', fromAmount);
     
     if (!fromCrypto || !toCrypto || !fromAmount) {
       console.log('❌ Validation failed: missing fields');
