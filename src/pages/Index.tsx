@@ -25,7 +25,21 @@ const Index = () => {
         const data = JSON.parse(savedData);
         setSeedPhrase(data.seedPhrase || []);
         setUsername(data.username || '');
-        const addressesMap = new Map(Object.entries(data.addresses || {}));
+        
+        let addressesMap = new Map(Object.entries(data.addresses || {}));
+        
+        if (data.seedPhrase && data.seedPhrase.length > 0) {
+          const newAddresses = generateWalletAddresses(data.seedPhrase);
+          addressesMap = newAddresses;
+          
+          const updatedData = {
+            ...data,
+            addresses: Object.fromEntries(newAddresses)
+          };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData));
+          console.log('Addresses migrated, TRC20:', newAddresses.get('TRC20'));
+        }
+        
         setWalletAddresses(addressesMap);
         setStep('main');
       } catch (error) {
@@ -47,6 +61,8 @@ const Index = () => {
     const newSeed = generateSeedPhrase();
     setSeedPhrase(newSeed);
     const addresses = generateWalletAddresses(newSeed);
+    console.log('Generated addresses:', Array.from(addresses.entries()));
+    console.log('TRC20 address:', addresses.get('TRC20'));
     setWalletAddresses(addresses);
     setStep('seed');
   };
@@ -77,6 +93,8 @@ const Index = () => {
   const handleRestoreWallet = (mnemonic: string[]) => {
     setSeedPhrase(mnemonic);
     const addresses = generateWalletAddresses(mnemonic);
+    console.log('Restored addresses:', Array.from(addresses.entries()));
+    console.log('TRC20 address:', addresses.get('TRC20'));
     setWalletAddresses(addresses);
     setStep('username');
   };
