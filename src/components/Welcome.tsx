@@ -43,7 +43,7 @@ const Welcome = ({ username, onNext }: WelcomeProps) => {
             <div className="grid grid-cols-2 gap-3">
               <div className="p-4 rounded-lg bg-muted/30 text-center">
                 <Icon name="Coins" size={24} className="text-primary mx-auto mb-2" />
-                <p className="text-2xl font-bold text-foreground">30+</p>
+                <p className="text-2xl font-bold text-foreground">1000+</p>
                 <p className="text-xs text-muted-foreground">Криптовалют</p>
               </div>
               <div className="p-4 rounded-lg bg-muted/30 text-center">
