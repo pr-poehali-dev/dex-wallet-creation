@@ -13,6 +13,7 @@ interface Crypto {
   usdValue: string;
   icon: string;
   iconUrl?: string;
+  networkIconUrl?: string;
   address: string;
   color: string;
 }
@@ -20,7 +21,7 @@ interface Crypto {
 interface AddCryptoModalProps {
   allCryptos: Crypto[];
   selectedCryptos: string[];
-  onAdd: (symbols: string[]) => void;
+  onAdd: (ids: string[]) => void;
   onClose: () => void;
 }
 
@@ -34,11 +35,11 @@ const AddCryptoModal = ({ allCryptos, selectedCryptos, onAdd, onClose }: AddCryp
     crypto.symbol.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const toggleCrypto = (symbol: string) => {
-    if (tempSelected.includes(symbol)) {
-      setTempSelected(tempSelected.filter(s => s !== symbol));
+  const toggleCrypto = (id: string) => {
+    if (tempSelected.includes(id)) {
+      setTempSelected(tempSelected.filter(s => s !== id));
     } else {
-      setTempSelected([...tempSelected, symbol]);
+      setTempSelected([...tempSelected, id]);
     }
   };
 
@@ -81,11 +82,11 @@ const AddCryptoModal = ({ allCryptos, selectedCryptos, onAdd, onClose }: AddCryp
 
             <div className="max-h-96 overflow-y-auto p-5 space-y-2">
               {filteredCryptos.map((crypto) => {
-                const isSelected = tempSelected.includes(crypto.symbol);
+                const isSelected = tempSelected.includes(crypto.id);
                 return (
                   <Card
                     key={crypto.id}
-                    onClick={() => toggleCrypto(crypto.symbol)}
+                    onClick={() => toggleCrypto(crypto.id)}
                     className={`p-4 cursor-pointer transition-all rounded-xl ${
                       isSelected 
                         ? 'bg-primary/10 border-primary' 
@@ -94,11 +95,16 @@ const AddCryptoModal = ({ allCryptos, selectedCryptos, onAdd, onClose }: AddCryp
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
+                        <div className="relative w-10 h-10 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
                           {crypto.iconUrl ? (
                             <img src={crypto.iconUrl} alt={crypto.symbol} className="w-full h-full object-cover" />
                           ) : (
                             <span className={`text-lg font-bold ${crypto.color}`}>{crypto.icon}</span>
+                          )}
+                          {crypto.networkIconUrl && (
+                            <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-card border-2 border-card overflow-hidden shadow-sm">
+                              <img src={crypto.networkIconUrl} alt={crypto.network} className="w-full h-full object-cover" />
+                            </div>
                           )}
                         </div>
                         <div>

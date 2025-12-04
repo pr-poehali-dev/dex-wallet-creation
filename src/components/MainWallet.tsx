@@ -20,6 +20,7 @@ interface Crypto {
   usdValue: string;
   icon: string;
   iconUrl?: string;
+  networkIconUrl?: string;
   address: string;
   color: string;
 }
@@ -32,26 +33,48 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
   const [showQR, setShowQR] = useState(false);
   const [showSend, setShowSend] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedCryptoSymbols, setSelectedCryptoSymbols] = useState<string[]>(['USDT', 'BTC', 'ETH', 'SOL', 'BNB']);
+  const [selectedCryptoIds, setSelectedCryptoIds] = useState<string[]>(['1', '2', '3', '6', '4']); // USDT TRC20, BTC, ETH, SOL, BNB
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY_SELECTED);
     if (saved) {
       try {
-        setSelectedCryptoSymbols(JSON.parse(saved));
+        setSelectedCryptoIds(JSON.parse(saved));
       } catch (e) {
         console.error('Error loading selected cryptos', e);
       }
     }
   }, []);
 
-  const saveSelectedCryptos = (symbols: string[]) => {
-    setSelectedCryptoSymbols(symbols);
-    localStorage.setItem(STORAGE_KEY_SELECTED, JSON.stringify(symbols));
+  const saveSelectedCryptos = (ids: string[]) => {
+    setSelectedCryptoIds(ids);
+    localStorage.setItem(STORAGE_KEY_SELECTED, JSON.stringify(ids));
   };
 
   const allCryptoList: Crypto[] = [
-    { id: '1', name: 'Tether', symbol: 'USDT', network: 'TRC20', balance: '0.00', usdValue: '0.00', icon: '₮', iconUrl: 'https://cdn.poehali.dev/files/64ba7feb-f8b0-4f82-8ed8-a8b33c26c00d.png', address: walletAddresses.get('TRC20') || 'TXYZabcd1234...', color: 'text-green-600' },
+    // Стейблкоины в разных сетях
+    { id: '1', name: 'Tether (TRC20)', symbol: 'USDT', network: 'TRC20', balance: '0.00', usdValue: '0.00', icon: '₮', iconUrl: 'https://cdn.poehali.dev/files/64ba7feb-f8b0-4f82-8ed8-a8b33c26c00d.png', networkIconUrl: 'https://cryptologos.cc/logos/tron-trx-logo.png', address: walletAddresses.get('TRC20') || 'TXYZabcd1234...', color: 'text-green-600' },
+    { id: '106', name: 'Tether (ERC20)', symbol: 'USDT', network: 'ERC20', balance: '0.00', usdValue: '0.00', icon: '₮', iconUrl: 'https://cdn.poehali.dev/files/64ba7feb-f8b0-4f82-8ed8-a8b33c26c00d.png', networkIconUrl: 'https://cryptologos.cc/logos/ethereum-eth-logo.png', address: walletAddresses.get('Ethereum') || '0x742d35...', color: 'text-green-600' },
+    { id: '107', name: 'Tether (Solana)', symbol: 'USDT', network: 'Solana', balance: '0.00', usdValue: '0.00', icon: '₮', iconUrl: 'https://cdn.poehali.dev/files/64ba7feb-f8b0-4f82-8ed8-a8b33c26c00d.png', networkIconUrl: 'https://cryptologos.cc/logos/solana-sol-logo.png', address: walletAddresses.get('Solana') || 'Sol9vXc...', color: 'text-green-600' },
+    { id: '108', name: 'Tether (BEP20)', symbol: 'USDT', network: 'BEP20', balance: '0.00', usdValue: '0.00', icon: '₮', iconUrl: 'https://cdn.poehali.dev/files/64ba7feb-f8b0-4f82-8ed8-a8b33c26c00d.png', networkIconUrl: 'https://cryptologos.cc/logos/bnb-bnb-logo.png', address: walletAddresses.get('BSC') || '0xbnb123...', color: 'text-green-600' },
+    { id: '109', name: 'Tether (Polygon)', symbol: 'USDT', network: 'Polygon', balance: '0.00', usdValue: '0.00', icon: '₮', iconUrl: 'https://cdn.poehali.dev/files/64ba7feb-f8b0-4f82-8ed8-a8b33c26c00d.png', networkIconUrl: 'https://cryptologos.cc/logos/polygon-matic-logo.png', address: walletAddresses.get('Polygon') || '0xmatic...', color: 'text-green-600' },
+    { id: '110', name: 'Tether (Avalanche)', symbol: 'USDT', network: 'Avalanche', balance: '0.00', usdValue: '0.00', icon: '₮', iconUrl: 'https://cdn.poehali.dev/files/64ba7feb-f8b0-4f82-8ed8-a8b33c26c00d.png', networkIconUrl: 'https://cryptologos.cc/logos/avalanche-avax-logo.png', address: walletAddresses.get('Avalanche') || 'X-avax...', color: 'text-green-600' },
+    { id: '111', name: 'USD Coin (ERC20)', symbol: 'USDC', network: 'ERC20', balance: '0.00', usdValue: '0.00', icon: 'C', iconUrl: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png', networkIconUrl: 'https://cryptologos.cc/logos/ethereum-eth-logo.png', address: walletAddresses.get('Ethereum') || '0xusdc...', color: 'text-blue-600' },
+    { id: '112', name: 'USD Coin (Solana)', symbol: 'USDC', network: 'Solana', balance: '0.00', usdValue: '0.00', icon: 'C', iconUrl: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png', networkIconUrl: 'https://cryptologos.cc/logos/solana-sol-logo.png', address: walletAddresses.get('Solana') || 'Sol9vXc...', color: 'text-blue-600' },
+    { id: '113', name: 'USD Coin (BEP20)', symbol: 'USDC', network: 'BEP20', balance: '0.00', usdValue: '0.00', icon: 'C', iconUrl: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png', networkIconUrl: 'https://cryptologos.cc/logos/bnb-bnb-logo.png', address: walletAddresses.get('BSC') || '0xusdc...', color: 'text-blue-600' },
+    { id: '114', name: 'USD Coin (Polygon)', symbol: 'USDC', network: 'Polygon', balance: '0.00', usdValue: '0.00', icon: 'C', iconUrl: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png', networkIconUrl: 'https://cryptologos.cc/logos/polygon-matic-logo.png', address: walletAddresses.get('Polygon') || '0xusdc...', color: 'text-blue-600' },
+    { id: '115', name: 'Dai (ERC20)', symbol: 'DAI', network: 'ERC20', balance: '0.00', usdValue: '0.00', icon: 'D', iconUrl: 'https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png', networkIconUrl: 'https://cryptologos.cc/logos/ethereum-eth-logo.png', address: walletAddresses.get('Ethereum') || '0xdai...', color: 'text-yellow-600' },
+    { id: '116', name: 'Dai (BEP20)', symbol: 'DAI', network: 'BEP20', balance: '0.00', usdValue: '0.00', icon: 'D', iconUrl: 'https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png', networkIconUrl: 'https://cryptologos.cc/logos/bnb-bnb-logo.png', address: walletAddresses.get('BSC') || '0xdai...', color: 'text-yellow-600' },
+    { id: '117', name: 'Binance USD (BEP20)', symbol: 'BUSD', network: 'BEP20', balance: '0.00', usdValue: '0.00', icon: 'B', iconUrl: 'https://cryptologos.cc/logos/binance-usd-busd-logo.png', networkIconUrl: 'https://cryptologos.cc/logos/bnb-bnb-logo.png', address: walletAddresses.get('BSC') || '0xbusd...', color: 'text-yellow-600' },
+    { id: '118', name: 'TrueUSD (ERC20)', symbol: 'TUSD', network: 'ERC20', balance: '0.00', usdValue: '0.00', icon: 'T', iconUrl: 'https://cryptologos.cc/logos/trueusd-tusd-logo.png', networkIconUrl: 'https://cryptologos.cc/logos/ethereum-eth-logo.png', address: walletAddresses.get('Ethereum') || '0xtusd...', color: 'text-blue-600' },
+    { id: '119', name: 'TrueUSD (TRC20)', symbol: 'TUSD', network: 'TRC20', balance: '0.00', usdValue: '0.00', icon: 'T', iconUrl: 'https://cryptologos.cc/logos/trueusd-tusd-logo.png', networkIconUrl: 'https://cryptologos.cc/logos/tron-trx-logo.png', address: walletAddresses.get('Tron') || 'TRX7ya...', color: 'text-blue-600' },
+    { id: '120', name: 'Pax Dollar (ERC20)', symbol: 'USDP', network: 'ERC20', balance: '0.00', usdValue: '0.00', icon: 'P', iconUrl: 'https://cryptologos.cc/logos/paxos-standard-pax-logo.png', networkIconUrl: 'https://cryptologos.cc/logos/ethereum-eth-logo.png', address: walletAddresses.get('Ethereum') || '0xusdp...', color: 'text-green-600' },
+    { id: '121', name: 'Gemini Dollar (ERC20)', symbol: 'GUSD', network: 'ERC20', balance: '0.00', usdValue: '0.00', icon: 'G', iconUrl: 'https://cryptologos.cc/logos/gemini-dollar-gusd-logo.png', networkIconUrl: 'https://cryptologos.cc/logos/ethereum-eth-logo.png', address: walletAddresses.get('Ethereum') || '0xgusd...', color: 'text-blue-600' },
+    { id: '122', name: 'Frax (ERC20)', symbol: 'FRAX', network: 'ERC20', balance: '0.00', usdValue: '0.00', icon: 'F', iconUrl: 'https://cryptologos.cc/logos/frax-frax-logo.png', networkIconUrl: 'https://cryptologos.cc/logos/ethereum-eth-logo.png', address: walletAddresses.get('Ethereum') || '0xfrax...', color: 'text-gray-700' },
+    { id: '123', name: 'Frax (BEP20)', symbol: 'FRAX', network: 'BEP20', balance: '0.00', usdValue: '0.00', icon: 'F', iconUrl: 'https://cryptologos.cc/logos/frax-frax-logo.png', networkIconUrl: 'https://cryptologos.cc/logos/bnb-bnb-logo.png', address: walletAddresses.get('BSC') || '0xfrax...', color: 'text-gray-700' },
+    { id: '124', name: 'USDD (TRC20)', symbol: 'USDD', network: 'TRC20', balance: '0.00', usdValue: '0.00', icon: 'U', iconUrl: 'https://cryptologos.cc/logos/usdd-usdd-logo.png', networkIconUrl: 'https://cryptologos.cc/logos/tron-trx-logo.png', address: walletAddresses.get('Tron') || 'TRX7ya...', color: 'text-gray-700' },
+    
+    // Основные криптовалюты
     { id: '2', name: 'Bitcoin', symbol: 'BTC', network: 'Bitcoin', balance: '0.00000000', usdValue: '0.00', icon: '₿', iconUrl: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png', address: walletAddresses.get('Bitcoin') || 'bc1qxy2k...', color: 'text-orange-500' },
     { id: '3', name: 'Ethereum', symbol: 'ETH', network: 'Ethereum', balance: '0.0000', usdValue: '0.00', icon: 'Ξ', iconUrl: 'https://cryptologos.cc/logos/ethereum-eth-logo.png', address: walletAddresses.get('Ethereum') || '0x742d35...', color: 'text-blue-600' },
     { id: '4', name: 'BNB', symbol: 'BNB', network: 'BSC', balance: '0.00', usdValue: '0.00', icon: '🔶', iconUrl: 'https://cryptologos.cc/logos/bnb-bnb-logo.png', address: walletAddresses.get('BSC') || '0xbnb123...', color: 'text-yellow-600' },
@@ -158,7 +181,7 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
     { id: '105', name: 'Kaspa', symbol: 'KAS', network: 'Kaspa', balance: '0', usdValue: '0.00', icon: 'K', iconUrl: 'https://cryptologos.cc/logos/kaspa-kas-logo.png', address: walletAddresses.get('Kaspa') || 'kaspa:...', color: 'text-blue-600' },
   ];
 
-  const mainCryptos = allCryptoList.filter(c => selectedCryptoSymbols.includes(c.symbol));
+  const mainCryptos = allCryptoList.filter(c => selectedCryptoIds.includes(c.id));
   const totalBalance = mainCryptos.reduce((sum, c) => sum + parseFloat(c.usdValue.replace(',', '')), 0);
 
   const handleReceive = (crypto: Crypto) => {
@@ -263,11 +286,16 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
+                      <div className="relative w-12 h-12 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
                         {crypto.iconUrl ? (
                           <img src={crypto.iconUrl} alt={crypto.symbol} className="w-full h-full object-cover" />
                         ) : (
                           <span className={`text-2xl font-bold ${crypto.color}`}>{crypto.icon}</span>
+                        )}
+                        {crypto.networkIconUrl && (
+                          <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-card border-2 border-card overflow-hidden shadow-sm">
+                            <img src={crypto.networkIconUrl} alt={crypto.network} className="w-full h-full object-cover" />
+                          </div>
                         )}
                       </div>
                       <div>
@@ -448,7 +476,7 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
       {showAddModal && (
         <AddCryptoModal
           allCryptos={allCryptoList}
-          selectedCryptos={selectedCryptoSymbols}
+          selectedCryptos={selectedCryptoIds}
           onAdd={saveSelectedCryptos}
           onClose={() => setShowAddModal(false)}
         />
@@ -460,11 +488,16 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
             <div className="w-12 h-1 bg-border rounded-full mx-auto mb-6"></div>
             
             <div className="flex items-center space-x-4 mb-6">
-              <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
+              <div className="relative w-16 h-16 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
                 {selectedCrypto.iconUrl ? (
                   <img src={selectedCrypto.iconUrl} alt={selectedCrypto.symbol} className="w-full h-full object-cover" />
                 ) : (
                   <span className={`text-3xl font-bold ${selectedCrypto.color}`}>{selectedCrypto.icon}</span>
+                )}
+                {selectedCrypto.networkIconUrl && (
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-card border-2 border-card overflow-hidden shadow-md">
+                    <img src={selectedCrypto.networkIconUrl} alt={selectedCrypto.network} className="w-full h-full object-cover" />
+                  </div>
                 )}
               </div>
               <div>
