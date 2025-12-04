@@ -94,24 +94,32 @@ const SwapModal = ({ open, onClose, allCryptos, onTransactionComplete }: SwapMod
   if (!open) return null;
 
   const handleSwap = () => {
+    console.log('=== SWAP STARTED ===');
+    console.log('From:', fromCrypto?.symbol, 'To:', toCrypto?.symbol, 'Amount:', fromAmount);
+    
     if (!fromCrypto || !toCrypto || !fromAmount) {
+      console.log('❌ Validation failed: missing fields');
       toast.error('Заполните все поля');
       return;
     }
 
     const swapAmount = parseFloat(fromAmount);
     const currentBalance = parseFloat(fromCrypto.balance.replace(',', ''));
+    console.log('Swap amount:', swapAmount, 'Current balance:', currentBalance);
 
     if (swapAmount > currentBalance) {
+      console.log('❌ Insufficient funds');
       toast.error('Недостаточно средств');
       return;
     }
 
     if (swapAmount <= 0) {
+      console.log('❌ Invalid amount');
       toast.error('Некорректная сумма');
       return;
     }
 
+    console.log('✅ Validation passed, starting swap...');
     setIsSwapping(true);
 
     // Создаём транзакцию отправки
