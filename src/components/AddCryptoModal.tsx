@@ -95,14 +95,16 @@ const AddCryptoModal = ({ allCryptos, selectedCryptos, onAdd, onClose }: AddCryp
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
-                        <div className="relative w-10 h-10 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
-                          {crypto.iconUrl ? (
-                            <img src={crypto.iconUrl} alt={crypto.symbol} className="w-full h-full object-cover" />
-                          ) : (
-                            <span className={`text-lg font-bold ${crypto.color}`}>{crypto.icon}</span>
-                          )}
+                        <div className="relative w-10 h-10 rounded-full bg-secondary flex items-center justify-center overflow-visible">
+                          <div className="w-full h-full rounded-full overflow-hidden">
+                            {crypto.iconUrl ? (
+                              <img src={crypto.iconUrl} alt={crypto.symbol} className="w-full h-full object-cover" />
+                            ) : (
+                              <span className={`text-lg font-bold ${crypto.color}`}>{crypto.icon}</span>
+                            )}
+                          </div>
                           {crypto.networkIconUrl && (
-                            <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-card border-2 border-card overflow-hidden shadow-sm">
+                            <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-white dark:bg-gray-900 border-[2.5px] border-white dark:border-gray-900 overflow-hidden shadow-lg ring-1 ring-black/10">
                               <img src={crypto.networkIconUrl} alt={crypto.network} className="w-full h-full object-cover" />
                             </div>
                           )}

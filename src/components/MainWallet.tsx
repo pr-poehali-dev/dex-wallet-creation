@@ -286,14 +286,16 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <div className="relative w-12 h-12 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
-                        {crypto.iconUrl ? (
-                          <img src={crypto.iconUrl} alt={crypto.symbol} className="w-full h-full object-cover" />
-                        ) : (
-                          <span className={`text-2xl font-bold ${crypto.color}`}>{crypto.icon}</span>
-                        )}
+                      <div className="relative w-12 h-12 rounded-full bg-secondary flex items-center justify-center overflow-visible">
+                        <div className="w-full h-full rounded-full overflow-hidden">
+                          {crypto.iconUrl ? (
+                            <img src={crypto.iconUrl} alt={crypto.symbol} className="w-full h-full object-cover" />
+                          ) : (
+                            <span className={`text-2xl font-bold ${crypto.color}`}>{crypto.icon}</span>
+                          )}
+                        </div>
                         {crypto.networkIconUrl && (
-                          <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-card border-2 border-card overflow-hidden shadow-sm">
+                          <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-white dark:bg-gray-900 border-[3px] border-white dark:border-gray-900 overflow-hidden shadow-lg ring-1 ring-black/10">
                             <img src={crypto.networkIconUrl} alt={crypto.network} className="w-full h-full object-cover" />
                           </div>
                         )}
@@ -488,14 +490,16 @@ const MainWallet = ({ username, walletAddresses }: MainWalletProps) => {
             <div className="w-12 h-1 bg-border rounded-full mx-auto mb-6"></div>
             
             <div className="flex items-center space-x-4 mb-6">
-              <div className="relative w-16 h-16 rounded-full bg-secondary flex items-center justify-center overflow-hidden">
-                {selectedCrypto.iconUrl ? (
-                  <img src={selectedCrypto.iconUrl} alt={selectedCrypto.symbol} className="w-full h-full object-cover" />
-                ) : (
-                  <span className={`text-3xl font-bold ${selectedCrypto.color}`}>{selectedCrypto.icon}</span>
-                )}
+              <div className="relative w-16 h-16 rounded-full bg-secondary flex items-center justify-center overflow-visible">
+                <div className="w-full h-full rounded-full overflow-hidden">
+                  {selectedCrypto.iconUrl ? (
+                    <img src={selectedCrypto.iconUrl} alt={selectedCrypto.symbol} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className={`text-3xl font-bold ${selectedCrypto.color}`}>{selectedCrypto.icon}</span>
+                  )}
+                </div>
                 {selectedCrypto.networkIconUrl && (
-                  <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-card border-2 border-card overflow-hidden shadow-md">
+                  <div className="absolute -bottom-1.5 -right-1.5 w-7 h-7 rounded-full bg-white dark:bg-gray-900 border-[3px] border-white dark:border-gray-900 overflow-hidden shadow-xl ring-2 ring-black/10">
                     <img src={selectedCrypto.networkIconUrl} alt={selectedCrypto.network} className="w-full h-full object-cover" />
                   </div>
                 )}
